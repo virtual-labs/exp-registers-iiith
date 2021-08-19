@@ -20,4 +20,4 @@ Parallel Registers take in mulitple bits at a time.
 
 Shift Registers are the simplest serial interfaces. They take serial data in one bit at a time and convert it to parallel form or the other way around. The first way is Serial In Parallel Out and the ladder is Parallel In Serial Out. Shift Registers are used to make larger state machines like counters and UARTs.
 
-Source: Wikipedia
+
