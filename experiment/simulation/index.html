@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Document</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.7-b/css/style.min.css">
+	<link rel="stylesheet" href="css/main.css">
+	<!-- <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script> -->
+</head>
+
+<body>
+	<div class="container" style="padding-top:3%">
+		<div class="columns is-centered">
+			<div class="column is-one-quarter v-instruction-title">
+				Tasks
+			</div>
+			<div class="column">
+				<div class="v-tabs">
+					<ul>
+						<li class="is-active" id="Task1" onclick="changeTabs(event)">
+							<a>
+								Task 1
+							</a>
+						</li>
+						<li id="Task2" onclick="changeTabs(event)">
+							<a>
+								Task 2
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="columns is-centered">
+			<div class="column">
+				<div class="v-instruction-container">
+					<div class="v-instruction-title" id="TaskTitle">Shift Register</div>
+					<div class="v-instruction-text" id="TaskDescription">
+						Implement a simple shift register using D flip-flops. (SISO)
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="columns is-centered">
+		<div class="column is-one-quarter" style="margin:auto;text-align:center">
+		</div>
+		<div class="column"></div>
+		<div class="column is-one-third">
+			<button class="v-button" id="simulate-button">Simulate</button>
+			<button class="v-button" onclick="submitCircuit()">Submit</button>
+		</div>
+	</div>
+	<div class="columns is-variable is-centered is-flex">
+		<div class="column is-2-desktop is-3-tablet is-4-mobile">
+			<div class="v-datalist-container" style="height:100%">
+				<div class="v-datalist-title">Components</div>
+				<div class="v-datalist-row components-list" id="toolbar">
+					<!-- <div class="columns is-centered" id="toolbar">
+						<div class="column is-one-half"> -->
+							<div class="component-button AND" onclick="Add(event)">AND</div>
+							<div class="component-button OR" onclick="Add(event)">OR</div>
+							<div class="component-button NOT" onclick="Add(event)">NOT</div>
+							<div class="component-button NAND" onclick="Add(event)">NAND</div>
+							<div class="component-button ThreeIPNAND" onclick="Add(event)">3-NAND</div>
+						<!-- </div> -->
+						<!-- <div class="column is-one-half"> -->
+							<div class="component-button NOR" onclick="Add(event)">NOR</div>
+							<div class="component-button XOR" onclick="Add(event)">XOR</div>
+							<div class="component-button XNOR" onclick="Add(event)">XNOR</div>
+							<div class="component-button DDFlipFlop" onclick="addDDFlipFlop(event)"></div>
+							<div class="component-button CLOCK" id="AddClock">CLOCK</div>
+						<!-- </div>
+					</div> -->
+				</div>
+
+			</div>
+		</div>
+		<div class="column is-7-desktop is-5-tablet is-4-mobile">
+			<div id="circuit-board">
+				<div id="working-area">
+				</div>
+			</div>
+		</div>
+		<div class="column is-3-desktop is-4-tablet is-4-mobile">
+			<div class="v-datalist-container components-list">
+				<div class="v-datalist-title">Observations</div>
+				<div class="v-datalist-row">
+					<div class="v-table-wrap">
+						<table class="table is-bordered is-fullwidth">
+							<thead id="table-head">
+								<tr>
+									<th colspan="2">Inputs</th>
+									<th colspan="2">Expected Values</th>
+									<th colspan="2">Observed Values</th>
+								</tr>
+								<tr>
+									<th>A</th>
+									<th>B</th>
+									<th>Sum</th>
+									<th>Carry</th>
+									<th>Sum</th>
+									<th>Carry</th>
+								</tr>
+							</thead>
+							<tbody id="table-body">
+							</tbody>
+						</table>
+					</div>
+					<div id="result"></div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<div class="menu">
+		<ul class="menu-options">
+			<li class="menu-option">Delete</li>
+			<li class="menu-option">Cancel</li>
+		</ul>
+	</div>
+	<div class="modal">
+		<div class="modal-content">
+			<div class="container">
+				<span class="close-button">&times;</span>
+				<div class="columns is-centered is-mobile">
+					<div class="column is-one-quarter">Freq(Hz): </div>
+					<div class="column">
+						<div class="control">
+							<input class="input" id="frequency-input" type="text" placeholder="" />
+						</div>
+					</div>
+				</div>
+				<div class="columns is-centered is-mobile">
+					<div class="column is-one-quarter">Duty Cycle(%): </div>
+					<div class="column">
+						<div class="control">
+							<input class="input" id="dutycycle-input" type="text" placeholder="" />
+						</div>
+					</div>
+				</div>
+				<div class="columns is-centered is-mobile">
+					<div class="column center-content">
+						<button class="v-button" id="clockAdd">Add Clock</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+<script src="js/jsplumb.bundle.js"></script>
+<!-- <script src="js/layout.js"></script> -->
+<script type="module" src="js/main.js"></script>
+<!-- <script src="js/gate.js"></script> -->
+<!-- <script src="js/fa.js"></script> -->
+<!-- <script src="js/validator.js"></script> -->
+
+</html>
