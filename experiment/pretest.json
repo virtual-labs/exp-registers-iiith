@@ -1,0 +1,75 @@
+{
+    "version": 2.0,
+    "questions": [
+        {
+            "question": "1. A register classifies under",
+            "answers": {
+                "a": "Sequential circuit",
+                "b": "Combinational circuit",
+                "c": "CPU",
+                "d": "Latches"
+            },
+            "correctAnswer": "a",
+            "explanations": {
+              
+            },
+            "difficulty": "beginner"
+        },
+        {
+            "question": "2. Which of the following is not a type of register",
+            "answers": {
+                "a": "PIPO",
+                "b": "SISO",
+                "c": "PISO",
+                "d": "PICO"
+            },
+            "correctAnswer": "d",
+            "explanations": {
+               
+            },
+            "difficulty": "beginner"
+        },
+        {
+            "question": "3. PIPO shift registers use which type of flip flop",
+            "answers": {
+                "a": "D flip flop",
+                "b": "SR flip flop",
+                "c": "JK flip flop",
+                "d": "T flip flop"
+            },
+            "correctAnswer": "a",
+            "explanations": {
+               
+            },
+            "difficulty": "beginner"
+        },
+        {
+            "question": "4. What devices have registers used in them",
+            "answers": {
+                "a": "COmputer",
+                "b": "Calculator",
+                "c": "Electric meter",
+                "d": "All of these"
+            },
+            "correctAnswer": "d",
+            "explanations": {
+               
+            },
+            "difficulty": "intermediate"
+        },
+        {
+            "question": "5. How many types of shift registers are possible ?",
+            "answers": {
+                "a": "2",
+                "b": "4",
+                "c": "3",
+                "d": "1"
+            },
+            "correctAnswer": "a",
+            "explanations": {
+               
+            },
+            "difficulty": "advanced"
+        }
+    ]
+}
