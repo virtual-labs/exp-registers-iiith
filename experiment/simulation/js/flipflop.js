@@ -666,6 +666,15 @@ export function deleteFF(id) {
                 flipFlops[key].clk = null;
             }
         }
+        
+        for(let key in gates){
+        if(gates[key].inputs.length > 0){
+            for(let i = 0; i < gates[key].inputs.length; i++){
+                if(gates[key].inputs[i][0] === ff){
+                    gates[key].inputs.splice(i, 1);
+                }
+            }
+        }
     }
 
 
