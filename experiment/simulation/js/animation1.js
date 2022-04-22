@@ -1,3 +1,4 @@
+"use strict";
 // Dimensions of working area
 const circuitBoard = document.getElementById("circuit-board");
 const sidePanels = document.getElementsByClassName("v-datalist-container");
@@ -18,7 +19,6 @@ const instructionBox = document.getElementsByClassName("instructions-box")[0];
 instructionBox.addEventListener("click", (e) => {
   instructionBox.classList.toggle("expand");
 });
-
 const svg = document.querySelector(".svg");
 const inputpath1 = document.querySelector("#inputpath1");
 const svgns = "http://www.w3.org/2000/svg";

@@ -1,3 +1,4 @@
+"use strict";
 // Dimensions of working area
 const circuitBoard = document.getElementById("circuit-board");
 const sidePanels = document.getElementsByClassName("v-datalist-container");
@@ -18,7 +19,6 @@ const instructionBox = document.getElementsByClassName("instructions-box")[0];
 instructionBox.addEventListener("click", (e) => {
   instructionBox.classList.toggle("expand");
 });
-
 const svg = document.querySelector(".svg");
 const inputpath1 = document.querySelector("#inputpath1");
 const svgns = "http://www.w3.org/2000/svg";
@@ -265,7 +265,7 @@ function errno() {
 
 }
 function batado() {
-    OBSERV.innerHTML = "Simulation has finished. Press Restart to start again"
+    OBSERV.innerHTML = "Simulation has finished. Press Restart to start again";
 }
 function setter(a, b) {
     if (a == 1) {
@@ -278,10 +278,10 @@ function setter(a, b) {
 }
 outputDisappear();
 var tl = gsap.timeline({ repeat: 0, repeatDelay: 0 });
-var tl1=gsap.timeline({ repeat: 0, repeatDelay: 0 });
+
 
 function fourXspeed() {
-    if (textClock.textContent == 1 && textSI.textContent != 2 && tl.progress() != 1 && tl.progress() != 0) {
+    if ((textClock.textContent == 1 && textSI.textContent != 2 && tl.progress() != 1 && tl.progress() != 0)|| tl.progress()!=0) {
         tl.resume();
         tl.timeScale(4);
         OBSERV.innerHTML = "4x speed";
@@ -290,7 +290,7 @@ function fourXspeed() {
     }
 }
 function doubleSpeed() {
-    if (textClock.textContent == 1 && textSI.textContent != 2 && tl.progress() != 1 && tl.progress() != 0) {
+    if ((textClock.textContent = 1 && textSI.textContent != 2 && tl.progress() != 1 && tl.progress() != 0) || tl.progress()!=0) {
         tl.resume();
         tl.timeScale(2);
         OBSERV.innerHTML = "2x speed";
@@ -314,19 +314,19 @@ function stopCircuit() {
     if (tl.time() != 0 && tl.progress() != 1) {
         tl.pause();
         // console.log(tl.progress());
-        OBSERV.innerHTML = "Simulation has been stopped."
+        OBSERV.innerHTML = "Simulation has been stopped.";
         decide = 0;
         BUTTON.innerHTML = "Start";
         SPEED.selectedIndex=0;
     }
     else if (tl.progress() == 1) {
-        OBSERV.innerHTML = "Please Restart the simulation"
+        OBSERV.innerHTML = "Please Restart the simulation";
     }
 
 }
-var decide = 0;
+let decide = 0;
 function button() {
-    if (decide == 0) {
+    if (decide ==0) {
         startCircuit();
 
     }
@@ -343,6 +343,13 @@ function startCircuit() {
         serialDotVisible();
         clockDotVisible();
         OBSERV.innerHTML = "Simulation has started.";
+        decide = 1;
+        BUTTON.innerHTML = "Halt";
+        SPEED.selectedIndex=0;
+    }
+    else if(tl.progress()!=0)
+    {
+        tl.play();
         decide = 1;
         BUTTON.innerHTML = "Halt";
         SPEED.selectedIndex=0;
@@ -380,8 +387,8 @@ function transfer() {
     appendClockTo0();
     OBSERV.innerHTML = "The clock has reached negative edge for a duration of 2 seconds. When the next positive edge would be encountered serial transfer would take place to the right.";
    
-    decide = 0;
-    BUTTON.innerHTML = "Start";
+   /* decide = 0;
+    BUTTON.innerHTML = "Start";*/
 }
 tl.add(serialDotVisible, 0);
 tl.add(clockDotVisible, 0);
