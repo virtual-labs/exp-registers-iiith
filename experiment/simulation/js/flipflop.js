@@ -1,4 +1,4 @@
-import { registerGate,jsPlumbInstance } from "./main.js";
+import { registerGate, jsPlumbInstance } from "./main.js";
 import { setPosition } from "./layout.js";
 import { gates } from './gate.js';
 
@@ -586,7 +586,7 @@ export function checkConnectionsDD() {
     for (let gateId in gates) {
         const gate = gates[gateId];
         if (gate.isInput) {
-            if (!gate.isConnected ) {
+            if (!gate.isConnected) {
                 correctConnection = false;
                 break;
             }
@@ -601,7 +601,7 @@ export function checkConnectionsDD() {
             if (gate.inputPoints.length != gate.inputs.length) {
                 correctConnection = false;
             }
-            else if (!gate.isConnected  && !gate.isOutput ) {
+            else if (!gate.isConnected && !gate.isOutput) {
                 correctConnection = false;
             }
         }
@@ -636,42 +636,43 @@ export function deleteFF(id) {
     jsPlumbInstance._removeElement(document.getElementById(ff.id));
 
     for (let key in flipFlops) {
-        if(ff.constructor.name === "JKFlipFlop"){
-            if(flipFlops[key].J[0] === ff) {
+        if (ff.constructor.name === "JKFlipFlop") {
+            if (flipFlops[key].J[0] === ff) {
                 flipFlops[key].J = null;
             }
-            if(flipFlops[key].K[0] === ff) {
+            if (flipFlops[key].K[0] === ff) {
                 flipFlops[key].K = null;
             }
-            if(flipFlops[key].clk[0] === ff) {
+            if (flipFlops[key].clk[0] === ff) {
                 flipFlops[key].clk = null;
             }
         }
-        else if(ff.constructor.name === "RSFlipFlop"){
-            if(flipFlops[key].R[0] === ff){
+        else if (ff.constructor.name === "RSFlipFlop") {
+            if (flipFlops[key].R[0] === ff) {
                 flipFlops[key].R = null;
             }
-            if(flipFlops[key].S[0] === ff){
+            if (flipFlops[key].S[0] === ff) {
                 flipFlops[key].S = null;
             }
-            if(flipFlops[key].clk[0] === ff){
+            if (flipFlops[key].clk[0] === ff) {
                 flipFlops[key].clk = null;
             }
         }
-        else if(ff.constructor.name === "DFlipFlop"){
-            if(flipFlops[key].d[0] === ff){
+        else if (ff.constructor.name === "DFlipFlop") {
+            if (flipFlops[key].d[0] === ff) {
                 flipFlops[key].d = null;
             }
-            if(flipFlops[key].clk[0] === ff){
+            if (flipFlops[key].clk[0] === ff) {
                 flipFlops[key].clk = null;
             }
         }
-        
-        for(let key in gates){
-        if(gates[key].inputs.length > 0){
-            for(let i = 0; i < gates[key].inputs.length; i++){
-                if(gates[key].inputs[i][0] === ff){
-                    gates[key].inputs.splice(i, 1);
+
+        for (let key in gates) {
+            if (gates[key].inputs.length > 0) {
+                for (let i = 0; i < gates[key].inputs.length; i++) {
+                    if (gates[key].inputs[i][0] === ff) {
+                        gates[key].inputs.splice(i, 1);
+                    }
                 }
             }
         }
