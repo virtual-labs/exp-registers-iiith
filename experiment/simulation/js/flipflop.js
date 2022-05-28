@@ -667,6 +667,19 @@ export function deleteFF(id) {
             }
         }
     }
+    
+    for (let elem in gates) {
+        let found = 0;
+        for (let index in gates[elem].inputs) {
+            if (gates[elem].inputs[index][0].id === ff.id) {
+                found = 1;
+                break;
+            }
+        }
+        if (found === 1) {
+            gates[elem].removeInput(ff);
+        }
+    }
 
 
 
