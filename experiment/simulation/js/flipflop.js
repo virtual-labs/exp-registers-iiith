@@ -634,40 +634,39 @@ export function deleteFF(id) {
     const ff = flipFlops[id];
     jsPlumbInstance.removeAllEndpoints(document.getElementById(ff.id));
     jsPlumbInstance._removeElement(document.getElementById(ff.id));
-
     for (let key in flipFlops) {
-        if(ff.constructor.name === "JKFlipFlop"){
-            if(flipFlops[key].J[0] === ff) {
-                flipFlops[key].J = null;
+        if (ff.constructor.name === "JKFlipFlop") {
+            if (flipFlops[key].j[0] === ff) {
+                flipFlops[key].j = null;
             }
-            if(flipFlops[key].K[0] === ff) {
-                flipFlops[key].K = null;
+            if (flipFlops[key].j[0] === ff) {
+                flipFlops[key].j = null;
             }
-            if(flipFlops[key].clk[0] === ff) {
+            if (flipFlops[key].clk[0] === ff) {
                 flipFlops[key].clk = null;
             }
         }
-        else if(ff.constructor.name === "RSFlipFlop"){
-            if(flipFlops[key].R[0] === ff){
-                flipFlops[key].R = null;
+        else if (ff.constructor.name === "RSFlipFlop") {
+            if (flipFlops[key].r[0] === ff) {
+                flipFlops[key].r = null;
             }
-            if(flipFlops[key].S[0] === ff){
-                flipFlops[key].S = null;
+            if (flipFlops[key].s[0] === ff) {
+                flipFlops[key].s = null;
             }
-            if(flipFlops[key].clk[0] === ff){
+            if (flipFlops[key].clk[0] === ff) {
                 flipFlops[key].clk = null;
             }
         }
-        else if(ff.constructor.name === "DFlipFlop"){
-            if(flipFlops[key].d[0] === ff){
+        else if (ff.constructor.name === "DFlipFlop") {
+            if (flipFlops[key].d[0] === ff) {
                 flipFlops[key].d = null;
             }
-            if(flipFlops[key].clk[0] === ff){
+            if (flipFlops[key].clk[0] === ff) {
                 flipFlops[key].clk = null;
             }
         }
     }
-    
+
     for (let elem in gates) {
         let found = 0;
         for (let index in gates[elem].inputs) {
@@ -680,7 +679,6 @@ export function deleteFF(id) {
             gates[elem].removeInput(ff);
         }
     }
-
 
 
     delete flipFlops[id];
