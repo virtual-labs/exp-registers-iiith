@@ -77,15 +77,17 @@ function changeTabs(e) {
 
 window.changeTabs = changeTabs;
 
-function updateInstructions() {
-  if (window.currentTab === "task1") {
-    document.getElementById("TaskTitle").innerHTML = "Serial Register";
-    document.getElementById("TaskDescription").innerHTML = 'Implement a simple shift register using D flip-flops. (SISO)';
+// Instruction box
+const updateInstructions = () => {
+  const task = window.currentTab;
+  const instructionBox = document.getElementById("instruction-title");
+  let title = ""; 
+  if (task === "task1") {
+    title = `Instructions<br>Implement a Simple Shift register using D flip-flops. (SISO)`;
+  } else if (task === "task2") {
+    title = `Instructions<br>Implement a Parallel Load register using D flip-flops. (PIPO)`;
   }
-  if (window.currentTab === "task2") {
-    document.getElementById("TaskTitle").innerHTML = "Parallel Load Register";
-    document.getElementById("TaskDescription").innerHTML = 'Implement a Parallel Load register using D flip-flops. (PIPO)';
-  }
+  instructionBox.innerHTML = title;
 }
 
 // Toolbar
@@ -159,13 +161,6 @@ function toggleSimulation() {
 
 simButton.addEventListener("click", toggleSimulation);
 
-
-
-// Instruction box
-const instructionBox = document.getElementsByClassName("instructions-box")[0];
-instructionBox.addEventListener("click", (e) => {
-  instructionBox.classList.toggle("expand");
-});
 
 // Making webpage responsive
 

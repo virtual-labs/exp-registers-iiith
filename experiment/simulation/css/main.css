@@ -108,6 +108,14 @@ text {
   background-size: 80%;
 }
 
+.container {
+  margin-top: 1%;
+}
+
+.column {
+  text-align: center;
+}
+
 
 .high {
   text-align: center;
@@ -357,5 +365,17 @@ svg.wire path {
 }
 
 .v-instruction-container {
+  border:.2rem solid #97d23d;
   justify-content: flex-start;
+}
+
+.speed-box {
+  border:1px solid black;
+  color:black;
+  background-color:white;
+  text-align:center;
+  font-size:1.0rem;
+  border-radius:1em;
+  padding:.5em 1.0em;
+  cursor:pointer;
 }
