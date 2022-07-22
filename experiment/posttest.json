@@ -1,0 +1,59 @@
+{
+    "version": 2.0,
+    "questions": [
+        {
+            "question": "1. How many iterations does a  N input PIPO shift register take to reset the inputs to its original location ?",
+            "answers": {
+                "a": "N",
+                "b": "N/2",
+                "c": "lg(N)",
+                "d": "N*N"
+            },
+            "correctAnswer": "a",
+            "explanations": {},
+            "difficulty": "beginner"
+        },
+        {
+            "question": "2. How many clock cycles are required to serially move a input right by 3 places",
+            "answers": {
+                "a": "3",
+                "b": "4",
+                "c": "2",
+                "d": "1"
+            },
+            "correctAnswer": "b",
+            "explanations": {
+               
+            },
+            "difficulty": "intermediate"
+        },
+        {
+            "question": "3.What is the full form of PIPO",
+            "answers": {
+                "a": "Parallel In Parallel Out ",
+                "b": "Serial In Parllel Out ",
+                "c": "Parallel In Serial Out",
+                "d": "Parallel Input Parallel Output"
+            },
+            "correctAnswer": "a",
+            "explanations": {
+               
+            },
+            "difficulty": "intermediate"
+        },
+        {
+            "question": "4. If I1=1,I2=1,I3=0,I4=1 in a PIPO register , what is the value of I3 after 2 clock cycles ?",
+            "answers": {
+                "a": "1",
+                "b": "0",
+                "c": "I1",
+                "d": "Both a and c"
+            },
+            "correctAnswer": "a",
+            "explanations": {
+                
+            },
+            "difficulty": "advanced"
+        }
+    ]
+}
