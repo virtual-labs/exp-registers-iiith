@@ -38,7 +38,8 @@
 		<div class="columns is-centered">
 			<div class="column">
 				<div class="v-collapsible-instruction-container v-instruction-container">
-					<div id="instruction-title" class="v-collapsible is-size-5">Instructions<br>Implement a Simple Shift register using D flip-flops. (SISO)</div>
+					<div id="instruction-title" class="v-collapsible is-size-5">Instructions<br>Implement a Simple Shift
+						register using D flip-flops. (SISO)</div>
 					<div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%;">
 						<ul style="list-style: disc;">
 							<li>Click on components on the left side to add them to the circuit board.</li>
@@ -55,7 +56,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="columns is-centered is-flex is-flex-direction-row is-flex-wrap-wrap is-align-content-start">
+	<div class="columns is-centered is-flex-direction-row is-flex-wrap-wrap is-align-content-start">
 		<div class="column is-2-desktop is-12-tablet is-12-mobile">
 			<div class="v-datalist-container" style="height:100%">
 				<div class="v-datalist-title">Components</div>
@@ -85,6 +86,17 @@
 					<div class="v-table-wrap">
 						<table class="table is-bordered is-fullwidth">
 							<thead id="table-head">
+								<tr>
+									<th colspan="2">Inputs</th>
+									<th colspan="1">Expected Values</th>
+									<th colspan="1">Observed Values</th>
+								</tr>
+								<tr>
+									<th>D</th>
+									<th>Clk</th>
+									<th>Q</th>
+									<th>Q</th>
+								</tr>
 							</thead>
 							<tbody id="table-body">
 							</tbody>
@@ -93,8 +105,8 @@
 					<div id="result"></div>
 				</div>
 				<div class="v-datalist-row">
-					<button class="v-button" id="simulate-button">Simulate</button>
-					<button class="v-button" onclick="submitCircuit()">Submit</button>
+					<button class="v-button" id="simulate-button" onclick="toggleSimulation()">Simulate</button>
+					<button class="v-button" id="submit-button" onclick="submitCircuit()">Submit</button>
 				</div>
 
 			</div>
@@ -109,12 +121,14 @@
 	<div class="modal">
 		<div class="modal-content">
 			<div class="container">
-				<span class="close-button">&times;</span>
+				<div class="columns is-mobile is-flex-direction-row-reverse">
+					<span class="close-button">&times;</span>
+				</div>
 				<div class="columns is-centered is-mobile">
 					<div class="column is-one-quarter">Freq(Hz): </div>
 					<div class="column">
 						<div class="control">
-							<input class="input" id="frequency-input" type="text" placeholder="" />
+							<input class="input is-primary" id="frequency-input" type="text" placeholder="" />
 						</div>
 					</div>
 				</div>
@@ -122,7 +136,7 @@
 					<div class="column is-one-quarter">Duty Cycle(%): </div>
 					<div class="column">
 						<div class="control">
-							<input class="input" id="dutycycle-input" type="text" placeholder="" />
+							<input class="input is-primary" id="dutycycle-input" type="text" placeholder="" />
 						</div>
 					</div>
 				</div>

@@ -35,8 +35,8 @@
       "target": "pretest.html"
     },
     {
-      "target": "demo-series-register.html",
-      "source": "simulation/demo-series-register.html",
+      "target": "demo.html",
+      "source": "simulation/demo.html",
       "label": "Demo",
       "unit-type": "task",
       "content-type": "simulation"

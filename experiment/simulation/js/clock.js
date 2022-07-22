@@ -1,10 +1,8 @@
-import { gates } from "./gate.js";
+import { clearResult, gates } from "./gate.js";
 import { registerGate } from "./main.js";
-import { setPosition, toggleModal } from "./layout.js";
+import { toggleModal } from "./layout.js";
 
 'use strict';
-
-window.simulate = 0;
 
 export class Clock {
     constructor(frequency, dutyCycle) {
@@ -49,25 +47,6 @@ export class Clock {
          const el = document.getElementById(this.id);
          el.style.left = x + "px";
          el.style.top = y + "px";
- 
-         if (this.type != "Input" && this.type != "Output" && this.type != "Clock") {
- 
-             el.addEventListener(
-                 "contextmenu",
-                 function (ev) {
-                     ev.preventDefault();
-                     const origin = {
-                         left: ev.pageX - document.getScroll()[0],
-                         top: ev.pageY - document.getScroll()[1],
-                     };
-                     setPosition(origin);
-                     window.selectedComponent = this.id;
-                     window.componentType = "gate";
-                     return false;
-                 },
-                 false
-             );
-         }
          gates[this.id] = this;
          registerGate(this.id, this);
 
@@ -88,6 +67,7 @@ export class Clock {
     }
 
     simulate() {
+        clearResult();
         const time = 1000 / this.frequency;
         const intervalOn = (time * this.dutyCycle) / 100;
         const intervalOff = time - intervalOn;
@@ -98,7 +78,7 @@ export class Clock {
         let timerOn = null;
 
         const run = () => {
-            if(window.simulate === 1) {
+            if(window.simulationStatus === 1) {
                 return;
             }
             if (!currentState) {
@@ -116,7 +96,7 @@ export class Clock {
                 timerOff = setTimeout(run, intervalOff);
             }
 
-            window.sim2();
+            window.simClk();
         }
 
         timerOff = setTimeout(run, intervalOff);

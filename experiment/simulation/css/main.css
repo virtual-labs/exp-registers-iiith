@@ -97,11 +97,6 @@ text {
   background-image: url("../images/nor.svg");
 }
 
-.threeipnand {
-  background-image: url("../images/nand3.svg");
-  background-size: 130%;
-}
-
 
 .clock {
   background-image: url("../images/clock.svg");
@@ -114,6 +109,41 @@ text {
 
 .column {
   text-align: center;
+}
+
+.color-white{
+  fill: white;
+  stroke:rgb(68, 68, 119);
+  stroke-width:3;
+  fill-opacity:1;
+  stroke-opacity:1;
+}
+
+.color-blue{
+  
+  fill:#29e;
+  stroke:rgb(68, 68, 119);
+  stroke-width:3;
+  fill-opacity:1;
+  stroke-opacity:1;
+}
+
+.color-green{
+  
+  fill:green;
+  stroke:rgb(68, 68, 119);
+  stroke-width:3;
+  fill-opacity:1;
+  stroke-opacity:1;
+}
+
+.color-yellow{
+  
+  fill:#eeeb22;
+  stroke:rgb(68, 68, 119);
+  stroke-width:3;
+  fill-opacity:1;
+  stroke-opacity:1;
 }
 
 
@@ -352,6 +382,11 @@ svg.wire path {
   transition: visibility 0s linear 0s, opacity 0.25s 0s, transform 0.25s;
 }
 
+.highlight {
+  border:3px solid red;
+  box-shadow: 0 0 10px #719ECE;
+}
+
 /* for dropping instruction box  */
 
 .instructions-box {
@@ -369,7 +404,7 @@ svg.wire path {
   justify-content: flex-start;
 }
 
-.speed-box {
+.speed-box{
   border:1px solid black;
   color:black;
   background-color:white;
@@ -378,4 +413,72 @@ svg.wire path {
   border-radius:1em;
   padding:.5em 1.0em;
   cursor:pointer;
+}
+.wire-demo{
+  stroke-width: 3px;
+  fill: none;
+  stroke: black;
+}
+
+.gate-demo{
+  stroke-width: 3px;
+  fill: #29e;
+  stroke: black;
+}
+
+.text-demo{
+  font-size: 1em;
+  fill: black;
+}
+
+.fulladder-demo{
+  width: 100px;
+  height: 100px;
+}
+
+.flipflop-demo {
+  fill:#29e;
+  stroke:rgb(68, 68, 119);
+  stroke-width:5;
+  fill-opacity:1;
+  stroke-opacity:1;
+  height:250px;
+  width:100px;
+}
+
+.flipflop-demo-sm {
+  fill:#29e;
+  stroke:rgb(68, 68, 119);
+  stroke-width:5;
+  fill-opacity:1;
+  stroke-opacity:1;
+  height:150px;
+  width:100px;
+}
+
+.mux-demo {
+  width: 40px;
+  height: 40px;
+  fill:#29e;
+  stroke:rgb(68, 68, 119);
+  fill-opacity:1;
+  stroke-opacity:1;
+}
+
+/* observation table */
+
+.success-table{
+  font-size: 1rem;
+  color: rgb(31, 170, 31);
+  font-weight: bold;
+}
+
+.failure-table{
+  font-size: 1rem;
+  color: rgb(228, 23, 23);
+  font-weight: bold;
+}
+
+.bold-table{
+  font-weight: bold;
 }
