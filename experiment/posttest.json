@@ -6,11 +6,16 @@
             "answers": {
                 "a": "N",
                 "b": "N/2",
-                "c": "lg(N)",
+                "c": "log(N)",
                 "d": "N*N"
             },
             "correctAnswer": "a",
-            "explanations": {},
+            "explanations": {
+                "a": "In a PIPO shift register, each input is shifted by one position in each clock cycle. To reset the inputs to their original location, all N inputs need to go through N clock cycles. ",
+                "b": "In a PIPO shift register, each clock cycle shifts the inputs by one position. If only N/2 iterations were performed, the inputs would not return to their original location. ",
+                "c": "In the context of resetting the inputs of a PIPO shift register, it is not possible to achieve the desired result in log(N) iterations.",
+                "d": "It suggests a quadratic relationship between the number of inputs and the number of iterations, which is not applicable in this case."
+            },
             "difficulty": "beginner"
         },
         {
@@ -23,7 +28,10 @@
             },
             "correctAnswer": "b",
             "explanations": {
-               
+                "a": "It would be impossible to achieve the desired result in just 3 clock cycles",
+                "b": "To move the input right by 3 places, we need to perform three shifts and one shift from input to the first register, and each shift can be done in a single clock cycle. Therefore, the total number of clock cycles required is 4",
+                "c": "It would be impossible to achieve the desired result in just two clock cycles as it just shifts the input bit from input to register and then shifts it by 1 place",
+                "d": "It would be impossible to achieve the desired result in just one clock cycles as it is enough to just take the input bit and give the first register output."
             },
             "difficulty": "intermediate"
         },
@@ -31,13 +39,16 @@
             "question": "3.What is the full form of PIPO",
             "answers": {
                 "a": "Parallel In Parallel Out ",
-                "b": "Serial In Parllel Out ",
+                "b": "Serial In Parallel Out ",
                 "c": "Parallel In Serial Out",
                 "d": "Parallel Input Parallel Output"
             },
             "correctAnswer": "a",
             "explanations": {
-               
+                "a": "PIPO stands for Parallel In Parallel Out, which refers to a type of shift register where data in both input and output is parallel.",
+                "b": "The full form of SIPO is Serial In Parallel Out.",
+                "c": "The full form of PISO is Parallel In Serial Out.",
+                "d": "It does not represent the full form of PIPO correctly."
             },
             "difficulty": "intermediate"
         },
@@ -51,7 +62,10 @@
             },
             "correctAnswer": "a",
             "explanations": {
-                
+                "a": "In a PIPO (Parallel In, Parallel Out) register, the output shifts by one position for each clock cycle. After two clock cycles, the value of I3 would be the same as the value of I1 in the initial state. Since I1 is initially 1, the value of I3 after two clock cycles would be 1.",
+                "b": "Based on the shifting behavior of a PIPO register, the value of I3 is not always equal to it's initial value.",
+                "c": "In a PIPO register, there is no direct connection or dependency between I1 and I3. Each input bit is loaded independently, and the shifting behavior is determined by the clock cycles. Therefore, the value of I1 does not affect the value of I3 after two clock cycles",
+                "d": "Option c is incorrect because the value of I3 is not influenced by I1"
             },
             "difficulty": "advanced"
         }

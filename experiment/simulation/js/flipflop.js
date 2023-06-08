@@ -141,16 +141,16 @@ export function checkConnectionsDD() {
         // For Full Adder objects
         // Check if all the outputs are connected
         if (gate.qIsConnected == false) {
-            printErrors("Q of D Flip FLop not connected properly\n",id);
+            printErrors("Q of D Flip Flop not connected properly\n",id);
             return false;
         }
         // Check if all the inputs are connected
         if (gate.d == null || gate.d.length == 0) {
-            printErrors("D of D Flip FLop not connected properly\n",id);
+            printErrors("D of D Flip Flop not connected properly\n",id);
             return false;
         }
         if (gate.clk == null || gate.clk.length == 0) {
-            printErrors("CLK of D Flip FLop not connected properly\n",id);
+            printErrors("CLK of D Flip Flop not connected properly\n",id);
             return false;
         }
     }
