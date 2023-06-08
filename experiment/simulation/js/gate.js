@@ -227,6 +227,8 @@ window.setInput = setInput;
 export function clearResult() {
     const result = document.getElementById("result");
     result.innerHTML = "";
+    document.getElementById("table-body").innerHTML = "";
+    document.getElementById("table-head").innerHTML="";
 }
 
 export function printErrors(message,objectId) {
@@ -543,9 +545,13 @@ export function submitCircuit() {
     clearResult();
     document.getElementById("table-body").innerHTML = "";
     if (window.currentTab === "task1") {
+        if(!checkConnections() || !checkConnectionsDD())
+        return;
         testSISO("Input-0","Clock-0", "Output-1");
     }
     else if (window.currentTab === "task2") {
+        if(!checkConnections() || !checkConnectionsDD())
+        return;
         testPIPO("Input-3", "Input-2", "Input-1", "Input-0","Clock-0","Output-4", "Output-3", "Output-2", "Output-1");
     }
     
