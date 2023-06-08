@@ -624,6 +624,7 @@ function restartCircuit() {
     allDisappear();
     reboot();
     myFunction();
+    selectVisibleTo0();
     decide = 0;
     BUTTON.innerHTML = "Start";
     OBSERV.innerHTML = "Successfully restored";
@@ -672,6 +673,17 @@ function startCircuit() {
         OBSERV.innerHTML = "Please Restart the simulation";
     }
 }
+
+// all the execution begin here
+let timeline = gsap.timeline({ repeat: 0, repeatDelay: 0 });
+gsap.registerPlugin(MotionPathPlugin);
+demoWidth();
+// calling all the functions that are going to initialise 
+textIOInit();
+outputCoordinates();
+inputDots();
+outputDisappear();
+
 tl.add(serialDotVisible, 0);
 tl.add(selectVisibleTo0, 0);
 tl.add(clockDotVisible, 0);
