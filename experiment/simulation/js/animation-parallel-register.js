@@ -572,7 +572,7 @@ function errno() {
 
 }
 function batado() {
-    OBSERV.innerHTML = "Simulation has finished. Press Restart to start again"
+    OBSERV.innerHTML = "Simulation has finished. Please click on Reset and repeat the instructions given to start again."
 }
 function setter(a, b) {
     if (a == 1) {
@@ -643,7 +643,7 @@ function button() {
 function stopCircuit() {
     if (tl.time() != 0 && tl.progress() != 1) {
         tl.pause();
-        OBSERV.innerHTML = "Simulation has been stopped.";
+        OBSERV.innerHTML = "Simulation has been Paused. Please click on the Start button to Resume.";
         decide = 0;
         BUTTON.innerHTML = "Start";
         SPEED.selectedIndex=0;
