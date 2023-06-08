@@ -157,7 +157,7 @@ export function checkConnectionsDD() {
     for (let gateId in gates) {
         const gate = gates[gateId];
         const id = document.getElementById(gate.id);
-        if (gate.isInput) {
+        if (gate.isInput && gate.type!=="Clock") {
             if (!gate.isConnected ) {
                 printErrors("Highlighted component not connected properly\n",id);
                 return false;
@@ -174,7 +174,7 @@ export function checkConnectionsDD() {
                 printErrors("Highlighted component not connected properly\n",id);
                 return false;
             }
-            else if (!gate.isConnected  && !gate.isOutput ) {
+            else if (!gate.isConnected  && !gate.isOutput && gate.type!== "Clock" ) {
                 printErrors("Highlighted component not connected properly\n",id);
                 return false;
             }
