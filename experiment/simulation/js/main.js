@@ -633,44 +633,6 @@ export function registerGate(id, gate) {
             })
         );
     }
-    else if (gateType === "ThreeIPNAND") {
-        gate.addInputPoints(
-            jsPlumbInstance.addEndpoint(element, {
-                anchor: [0, 0.3, -1, 0, -7, 0],
-                source: true,
-                target: true,
-                connectionsDetachable: false,
-                uuid: "input:0:" + id,
-            })
-        );
-        gate.addInputPoints(
-            jsPlumbInstance.addEndpoint(element, {
-                anchor: [0, 0.5, -1, 0, -7, 0],
-                source: true,
-                target: true,
-                connectionsDetachable: false,
-                uuid: "input:1:" + id,
-            })
-        );
-        gate.addInputPoints(
-            jsPlumbInstance.addEndpoint(element, {
-                anchor: [0, 0.7, -1, 0, -7, 0],
-                source: true,
-                target: true,
-                connectionsDetachable: false,
-                uuid: "input:2:" + id,
-            })
-        );
-        gate.addOutputPoints(
-            jsPlumbInstance.addEndpoint(element, {
-                anchor: [1, 0.5, 1, 0, 7, 0],
-                source: true,
-                target: true,
-                connectionsDetachable: false,
-                uuid: "output:0:" + id,
-            })
-        );
-    }
     else if (gateType === "NOT") {
         gate.addInputPoints(
             jsPlumbInstance.addEndpoint(element, {

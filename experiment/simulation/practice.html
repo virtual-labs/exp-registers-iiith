@@ -7,12 +7,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<title>Registers: Practice</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.7-b/css/style.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/css/style.min.css">
 	<link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
-	<div class="container" style="margin-top:1%">
+	<div class="container">
 		<div class="columns is-centered">
 			<div class="column is-one-quarter v-instruction-title">
 				Tasks
@@ -37,24 +37,26 @@
 
 		<div class="columns is-centered">
 			<div class="column">
-				<div class="v-instruction-container instructions-box">
-					<div class="v-instruction-title" id="TaskTitle">Serial Register</div>
-					<div class="v-instruction-text" id="TaskDescription">
-						Implement a simple shift register using D flip-flops. (SISO)
-						<br>
-					</div>
-					<div>
-						<p>Click on components on the left side to add them to the circuit board.</p>
-						<p>Drag and drop components to move them around, connect them using wires by dragging your cursor from one endpoint to another.</p>
-						<p>You can delete components by right clicking on them and selecting the delete option.</p>
-						<p>Click on the "Simulate" button to simulate the circuit and see the output.</p>
-						<p>Click on the "Submit" button to submit the circuit once you think you have built the required circuit.</p>
+				<div class="v-collapsible-instruction-container v-instruction-container">
+					<div id="instruction-title" class="v-collapsible is-size-5">Instructions<br>Implement a Simple Shift
+						register using D flip-flops. (SISO)</div>
+					<div class="v-content" style="text-align: left; padding-left: 10%; padding-right: 10%;">
+						<ul style="list-style: disc;">
+							<li>Click on components on the left side to add them to the circuit board.</li>
+							<li>Drag and drop components to move them around, connect them using wires by dragging your
+								cursor from one endpoint to another.</li>
+							<li>You can delete components by right clicking on them and selecting the delete option.
+							</li>
+							<li>Click on the "Simulate" button to simulate the circuit and see the output.</li>
+							<li>Click on the "Submit" button to submit the circuit once you think you have built the
+								required circuit.</li>
+						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="columns is-centered is-flex is-flex-direction-row is-flex-wrap-wrap is-align-content-start">
+	<div class="columns is-centered is-flex-direction-row is-flex-wrap-wrap is-align-content-start">
 		<div class="column is-2-desktop is-12-tablet is-12-mobile">
 			<div class="v-datalist-container" style="height:100%">
 				<div class="v-datalist-title">Components</div>
@@ -84,6 +86,17 @@
 					<div class="v-table-wrap">
 						<table class="table is-bordered is-fullwidth">
 							<thead id="table-head">
+								<tr>
+									<th colspan="2">Inputs</th>
+									<th colspan="1">Expected Values</th>
+									<th colspan="1">Observed Values</th>
+								</tr>
+								<tr>
+									<th>D</th>
+									<th>Clk</th>
+									<th>Q</th>
+									<th>Q</th>
+								</tr>
 							</thead>
 							<tbody id="table-body">
 							</tbody>
@@ -92,8 +105,8 @@
 					<div id="result"></div>
 				</div>
 				<div class="v-datalist-row">
-					<button class="v-button" id="simulate-button">Simulate</button>
-					<button class="v-button" onclick="submitCircuit()">Submit</button>
+					<button class="v-button" id="simulate-button" onclick="toggleSimulation()">Simulate</button>
+					<button class="v-button" id="submit-button" onclick="submitCircuit()">Submit</button>
 				</div>
 
 			</div>
@@ -108,12 +121,14 @@
 	<div class="modal">
 		<div class="modal-content">
 			<div class="container">
-				<span class="close-button">&times;</span>
+				<div class="columns is-mobile is-flex-direction-row-reverse">
+					<span class="close-button">&times;</span>
+				</div>
 				<div class="columns is-centered is-mobile">
 					<div class="column is-one-quarter">Freq(Hz): </div>
 					<div class="column">
 						<div class="control">
-							<input class="input" id="frequency-input" type="text" placeholder="" />
+							<input class="input is-primary" id="frequency-input" type="text" placeholder="" />
 						</div>
 					</div>
 				</div>
@@ -121,7 +136,7 @@
 					<div class="column is-one-quarter">Duty Cycle(%): </div>
 					<div class="column">
 						<div class="control">
-							<input class="input" id="dutycycle-input" type="text" placeholder="" />
+							<input class="input is-primary" id="dutycycle-input" type="text" placeholder="" />
 						</div>
 					</div>
 				</div>
@@ -133,8 +148,8 @@
 			</div>
 		</div>
 	</div>
-	</div>
 	<script src="js/jsplumb.bundle.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/virtual-labs/virtual-style@0.0.8-b/js/script.js"></script>
 	<script type="module" src="js/main.js"></script>
 
 </body>

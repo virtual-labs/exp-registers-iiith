@@ -1,4 +1,4 @@
-import { simulate, deleteElement } from "./gate.js";
+import { deleteElement } from "./gate.js";
 import { connectDFlipFlopGate, unbindEvent, initSISO, initPIPO, refreshWorkingArea } from "./main.js";
 import {deleteFF} from "./flipflop.js";
 'use strict';
@@ -8,21 +8,13 @@ export const wireColours = ["#ff0000", "#00ff00", "#0000ff", "#bf6be3", "#ff00ff
 // Contextmenu
 const menu = document.querySelector(".menu");
 const menuOption = document.querySelector(".menu-option");
-let menuVisible = false;
-
-const toggleMenu = command => {
-  menu.style.display = command === "show" ? "block" : "none";
-  menuVisible = !menuVisible;
-};
-
 export const setPosition = ({ top, left }) => {
   menu.style.left = `${left}px`;
   menu.style.top = `${top}px`;
-  toggleMenu("show");
+  menu.style.display = "block";
 };
-
 window.addEventListener("click", e => {
-  if (menuVisible) toggleMenu("hide");
+  menu.style.display = "none";
   window.selectedComponent = null;
   window.componentType = null;
 });
@@ -48,27 +40,28 @@ function changeTabs(e) {
     return;
   }
 
-  if (window.currentTab != null) {
+  if (window.currentTab !== null) {
     document.getElementById(window.currentTab).classList.remove("is-active");
   }
   window.currentTab = task;
   document.getElementById(task).classList.add("is-active");
-
+  updateInstructions();
+  connectDFlipFlopGate();
+  refreshWorkingArea();
   // Half adder
-  if (task === "task1") {
-    unbindEvent();
-    connectDFlipFlopGate();
-    refreshWorkingArea();
-    initSISO();
-  }
-  if (task === "task2") {
-    unbindEvent();
-    connectDFlipFlopGate();
-    refreshWorkingArea();
-    initPIPO();
+  switch (task) {
+    case "task1":
+      initSISO();
+      break;
+    case "task2":
+      initPIPO();
+      break;
+    default:
+      console.debug("Unknown task");
+      break;
   }
   simButton.innerHTML = "Simulate";
-  window.simulate = 1;
+  window.simulationStatus = 1;
   updateInstructions();
   updateToolbar();
   clearObservations();
@@ -77,15 +70,17 @@ function changeTabs(e) {
 
 window.changeTabs = changeTabs;
 
-function updateInstructions() {
-  if (window.currentTab === "task1") {
-    document.getElementById("TaskTitle").innerHTML = "Serial Register";
-    document.getElementById("TaskDescription").innerHTML = 'Implement a simple shift register using D flip-flops. (SISO)';
+// Instruction box
+const updateInstructions = () => {
+  const task = window.currentTab;
+  const instructionBox = document.getElementById("instruction-title");
+  let title = ""; 
+  if (task === "task1") {
+    title = `Instructions<br>Implement a Simple Shift register using D flip-flops. (SISO)`;
+  } else if (task === "task2") {
+    title = `Instructions<br>Implement a Parallel Load register using D flip-flops. (PIPO)`;
   }
-  if (window.currentTab === "task2") {
-    document.getElementById("TaskTitle").innerHTML = "Parallel Load Register";
-    document.getElementById("TaskDescription").innerHTML = 'Implement a Parallel Load register using D flip-flops. (PIPO)';
-  }
+  instructionBox.innerHTML = title;
 }
 
 // Toolbar
@@ -93,26 +88,67 @@ function updateInstructions() {
 function updateToolbar() {
   let elem = "";
   if (window.currentTab === "task1" || window.currentTab === "task2") {
-    elem = '<div class="component-button and" onclick="addGate(event)">AND</div><div class="component-button or" onclick="addGate(event)">OR</div><div class="component-button not" onclick="addGate(event)">NOT</div><div class="component-button nand" onclick="addGate(event)">NAND</div><div class="component-button nor" onclick="addGate(event)">NOR</div><div class="component-button xor" onclick="addGate(event)">XOR</div><div class="component-button xnor" onclick="addGate(event)">XNOR</div><div class="component-button clock" id="addclock">CLOCK</div><div class="component-button dflipflop" onclick="addDFlipFlop(event)"></div>'
+    elem = `<div class="component-button and" onclick="addGate(event)">AND</div>
+            <div class="component-button or" onclick="addGate(event)">OR</div>
+            <div class="component-button not" onclick="addGate(event)">NOT</div>
+            <div class="component-button nand" onclick="addGate(event)">NAND</div>
+            <div class="component-button nor" onclick="addGate(event)">NOR</div>
+            <div class="component-button xor" onclick="addGate(event)">XOR</div>
+            <div class="component-button xnor" onclick="addGate(event)">XNOR</div>
+            <div class="component-button dflipflop" onclick="addDFlipFlop(event)"></div>
+            <div class="component-button clock" id="addclock">CLOCK</div>`;
   }
 
   document.getElementById("toolbar").innerHTML = elem;
+  document.getElementById("addclock").addEventListener("click", toggleModal);
+
 }
 
 // Clear observations
 function clearObservations() {
-
   document.getElementById("table-body").innerHTML = "";
-  let head = ''
+  let head = "";
 
   if (window.currentTab === "task1") {
-    head = ''
+    head = `<thead id="table-head">
+              <tr>
+                <th colspan="2">Inputs</th>
+                <th colspan="1">Expected Values</th>
+                <th colspan="1">Observed Values</th>
+              </tr>
+              <tr>
+                <th>D</th>
+                <th>Clk</th>
+                <th>Q</th>
+                <th>Q</th>
+              </tr>
+            </thead>`
+  } else if (window.currentTab === "task2") {
+    head = `<thead id="table-head">
+              <tr>
+                <th colspan="5">Inputs</th>
+                <th colspan="4">Observed Values</th>
+              </tr>
+              <tr>
+                <th>P1</th>
+                <th>P2</th>
+                <th>P3</th>
+                <th>P4</th>
+                <th>Clk</th>
+                <th>Q1</th>
+                <th>Q2</th>
+                <th>Q3</th>
+                <th>Q4</th>
+              </tr>
+            </thead>` 
   }
-  else if (window.currentTab === "task2") {
-    head = ''
+  else
+  {
+    console.log("Error: Unknown tab");
   }
+
   document.getElementById("table-head").innerHTML = head;
-  document.getElementById('result').innerHTML = "";
+  document.getElementById("result").innerHTML = "";
 }
 
 // Modal
@@ -122,6 +158,7 @@ const trigger = document.getElementById("addclock")
 const closeButton = document.querySelector(".close-button");
 
 export function toggleModal() {
+  console.log("Toggling modal");
   modal.classList.toggle("show-modal");
   document.getElementById('frequency-input').value = ""
   document.getElementById('dutycycle-input').value = ""
@@ -139,33 +176,30 @@ window.addEventListener("click", windowOnClick);
 
 
 // Simulation
-
+window.simulationStatus = 1;
 const simButton = document.getElementById("simulate-button");
+const submitButton = document.getElementById("submit-button");
 function toggleSimulation() {
-    if (window.simulate === 0) {
-    window.simulate = 1;
+  if (window.simulationStatus === 0) {
+    window.simulationStatus = 1;
     simButton.innerHTML = "Simulate";
+    submitButton.disabled = false;
   }
   else {
-    window.simulate = 0;
+    window.simulationStatus = 0;
     simButton.innerHTML = "Stop";
-    if(!window.sim())
+    submitButton.disabled = true;
+    if(!window.simulate())
     {
-      window.simulate = 1;
+      window.simulationStatus = 1;
       simButton.innerHTML = "Simulate";
+      submitButton.disabled = false;
     }
   }
 }
 
-simButton.addEventListener("click", toggleSimulation);
+window.toggleSimulation = toggleSimulation;
 
-
-
-// Instruction box
-const instructionBox = document.getElementsByClassName("instructions-box")[0];
-instructionBox.addEventListener("click", (e) => {
-  instructionBox.classList.toggle("expand");
-});
 
 // Making webpage responsive
 

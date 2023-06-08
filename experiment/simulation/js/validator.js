@@ -32,24 +32,45 @@ export function testSISO(inputD,inputClk, outputQ)  // This function takes 4 ids
     let d = gates_list[inputD];
     let clk = gates_list[inputClk];
     let circuitIsCorrect = true;
+    let dataTable = "";
 
 
     let q = gates_list[outputQ];
     q.setOutput(true);
+    for(let key in flipflops_list)
+    {
+        flipflops_list[key].setQ(true);
+        flipflops_list[key].setQbar(false);
+    }
 
-    // each list element consists of 5 values, D,Clk,Q
+    // each list element consists of 3 values, D,Clk,Q
     const evaluator = [[0, 0, 1], [1, 0, 1], [0, 1, 0], [1, 1, 1] , [0,0,1]];
 
-    evaluator.forEach(element => {
+    let incorrectConnections = false;
+    evaluator.every((element, index) => {
         d.setOutput(element[0] === 1);
         clk.setOutput(element[1] === 1);
-        testSimulation(gates_list,flipflops_list);
+        if(!testSimulation(gates_list,flipflops_list))
+        {
+            incorrectConnections=true;
+            return false;
+        }
         // check if output is correct
+        let className = "success-table";
+        let observedQ = q.output ? 1 : 0;
         if (q.output != element[2]) {
             circuitIsCorrect = false;
+            className = "failure-table";
         }
+        dataTable += `<tr class="bold-table"><th>${element[0]}</th><th>${element[1]}</th><td>${element[2]}</td><td class="${className}"> ${observedQ} </td></tr>`;
+        return true;
     });
-
+    if(incorrectConnections)
+    {
+        return;
+    }
+    const table_elem = document.getElementById("table-body");
+    table_elem.insertAdjacentHTML("beforeend", dataTable);
     const result = document.getElementById('result');
 
     if (circuitIsCorrect) {
@@ -79,17 +100,24 @@ export function testPIPO(p1,p2,p3,p4,inputClk,q1,q2,q3,q4)  // This function tak
     let outputQ4 = gates_list[q4];
 
     let circuitIsCorrect = true;
+    let dataTable = "";
 
     outputQ1.setOutput(true);
     outputQ2.setOutput(true);
     outputQ3.setOutput(true);
     outputQ4.setOutput(true);
+    for(let key in flipflops_list)
+    {
+        flipflops_list[key].setQ(true);
+        flipflops_list[key].setQbar(false);
+    }
 
 
-    // each list element consists of 5 values, P1,P2,P3,P4,Clk,Q1,Q2,Q3,Q4
+    // each list element consists of 9 values, P1,P2,P3,P4,Clk,Q1,Q2,Q3,Q4
     const evaluator = [[0,0,0,0,0,1,1,1,1], [1,1,1,1,0,1,1,1,1], [0,0,0,0,1,0,0,0,0], [1,1,1,1,1,1,1,1,1] , [0,0,0,0,0,1,1,1,1]];
 
-    evaluator.forEach(element => {
+    let incorrectConnections = false;
+    evaluator.every((element, index) => {
         if(!circuitIsCorrect){
             return;
         }
@@ -99,13 +127,30 @@ export function testPIPO(p1,p2,p3,p4,inputClk,q1,q2,q3,q4)  // This function tak
         inputP3.setOutput(element[2] === 1);
         inputP4.setOutput(element[3] === 1);
         clk.setOutput(element[4] === 1);
-        testSimulation(gates_list,flipflops_list);
+        if(!testSimulation(gates_list,flipflops_list))
+        {
+            incorrectConnections=true;
+            return false;
+        }
+        let className = "success-table";
+        let observedQ1 = outputQ1.output ? 1 : 0;
+        let observedQ2 = outputQ2.output ? 1 : 0;
+        let observedQ3 = outputQ3.output ? 1 : 0;
+        let observedQ4 = outputQ4.output ? 1 : 0;
         // check if output is correct
         if (outputQ1.output != element[5] || outputQ2.output != element[6] || outputQ3.output != element[7] || outputQ4.output != element[8]) {
             circuitIsCorrect = false;
+            className = "failure-table";
         }
+        dataTable += `<tr class="bold-table"><th>${element[0]}</th><th>${element[1]}</th><th>${element[2]}</th><th> ${element[3]}</th><th> ${element[4]} </th><td class="${className}"> ${observedQ1} </td><td class="${className}"> ${observedQ2}</td><td class="${className}"> ${observedQ3}</td><td class="${className}"> ${observedQ4}</td></tr>`;
+        return true;
     });
-
+    if(incorrectConnections)
+    {
+        return;
+    }
+    const table_elem = document.getElementById("table-body");
+    table_elem.insertAdjacentHTML("beforeend", dataTable);
     const result = document.getElementById('result');
 
     if (circuitIsCorrect) {
