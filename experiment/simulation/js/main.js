@@ -280,8 +280,7 @@ export const connectDFlipFlopGate = function () {
                     const output = gatejs.gates[fromEndpoint.elementId];
                     let pos = ""
                     if (Object.keys(toEndpoint.overlays)[0].includes("qout")) {
-                        pos = "Q";
-                        input.addqOutput(output);
+                        pos = "Q";                input.addqOutput(output);
                     }
                     else if (Object.keys(toEndpoint.overlays)[0].includes("qbarout")) {
                         pos = "Q'";
