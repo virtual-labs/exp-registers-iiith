@@ -673,7 +673,6 @@ function startCircuit() {
         OBSERV.innerHTML = "Please Restart the simulation";
     }
 }
-
 // all the execution begin here
 let timeline = gsap.timeline({ repeat: 0, repeatDelay: 0 });
 gsap.registerPlugin(MotionPathPlugin);
