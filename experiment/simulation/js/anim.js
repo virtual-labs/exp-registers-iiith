@@ -257,7 +257,15 @@ function alternateSelect() {
     }
 }
 
+function clockAppear() {
+    changeto1(16,404,4,4);
+    setter(textInput[4].textContent,dots[4]);
+}
 
+function clockDisappear() {
+    changeto0(16,404,4,4);
+    setter(textInput[4].textContent,dots[4]);
+}
 
 function changeto1(coordinateX,coordinateY,object,textObject) {
     textInput[textObject].textContent = 1;
@@ -305,7 +313,7 @@ function setOutputColor() {
 
 
 function display() {
-    observ.innerHTML = "Simulation has finished. Press Restart to start again"
+    observ.innerHTML = "Simulation has finished. Please click on Reset and repeat the instructions given to start again."
 }
 
 function reboot() {
@@ -330,6 +338,7 @@ function restartCircuit() {
     allDisappear();
     reboot();
     clearObservation();
+    changeto0(116,804,5,5); //sets select as 0
     decide = false;
     status.innerHTML = "Start";
     observ.innerHTML = "Successfully restored";
@@ -348,7 +357,7 @@ function simulationStatus() {
 function stopCircuit() {
     if (timeline.progress() !== 1) {
         timeline.pause();
-        observ.innerHTML = "Simulation has been stopped.";
+        observ.innerHTML = "Simulation has been Paused. Please click on the Start button to Resume.";
         decide = false;
         status.innerHTML = "Start";
         speed.selectedIndex = 0;
@@ -401,14 +410,20 @@ timeline.add(serialinputAppear, 0);
 timeline.add(serialinputDisappear, 10);
 timeline.add(outputSetter, 10);
 timeline.add(outputVisible, 10);
+timeline.add(clockDisappear,11)
 timeline.add(outputDisappear, 12);
 timeline.add(alternateSelect, 12);
+timeline.add(clockAppear,12)
 timeline.add(transfer, 12);
 timeline.add(outputVisible, 12);
+timeline.add(clockDisappear,13)  //sets clock to 0
 timeline.add(outputDisappear, 14);
+timeline.add(clockAppear,14)
 timeline.add(transfer, 14);
 timeline.add(outputVisible, 14);
+timeline.add(clockDisappear,15)
 timeline.add(outputDisappear, 16);
+timeline.add(clockAppear,16)
 timeline.add(transfer, 16);
 timeline.add(outputVisible, 16);
 timeline.eventCallback("onComplete", outputVisible);

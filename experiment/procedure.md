@@ -26,7 +26,7 @@
 
 ## Circuit Connections - 
 
-* Drag the first D Flip Flop and connect its Clk input point to the Clk input bit and its D input point to the P1 input bit. ALso connect its output point Q to the Q1 output bit.
+* Drag the first D Flip Flop and connect its Clk input point to the Clk input bit and its D input point to the P1 input bit. Also connect its output point Q to the Q1 output bit.
 * Drag the second D Flip Flop and connect its Clk input point to the Clk input bit and its D input point to the P2 input bit. Also connect its output point Q to the Q2 output bit.
 * Drag the third D Flip Flop and connect its Clk input point to the Clk input bit and its D input point to the P3 input bit. Also connect its output point Q to the Q3 output bit.
 * Drag the fourth D Flip Flop and connect its Clk input point to the Clk input bit and its D input point to the P4 input bit. Also connect its output point Q to the Q4 output bit.

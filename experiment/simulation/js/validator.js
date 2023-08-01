@@ -33,6 +33,20 @@ export function testSISO(inputD,inputClk, outputQ)  // This function takes 4 ids
     let clk = gates_list[inputClk];
     let circuitIsCorrect = true;
     let dataTable = "";
+    let head = `<thead id="table-head">
+    <tr>
+      <th colspan="2">Inputs</th>
+      <th colspan="1">Expected Values</th>
+      <th colspan="1">Observed Values</th>
+    </tr>
+    <tr>
+      <th>D</th>
+      <th>Clk</th>
+      <th>Q</th>
+      <th>Q</th>
+    </tr>
+  </thead>`
+  document.getElementById("table-head").innerHTML = head;
 
 
     let q = gates_list[outputQ];
@@ -101,6 +115,24 @@ export function testPIPO(p1,p2,p3,p4,inputClk,q1,q2,q3,q4)  // This function tak
 
     let circuitIsCorrect = true;
     let dataTable = "";
+    let head = `<thead id="table-head">
+    <tr>
+      <th colspan="5">Inputs</th>
+      <th colspan="4">Observed Values</th>
+    </tr>
+    <tr>
+      <th>P1</th>
+      <th>P2</th>
+      <th>P3</th>
+      <th>P4</th>
+      <th>Clk</th>
+      <th>Q1</th>
+      <th>Q2</th>
+      <th>Q3</th>
+      <th>Q4</th>
+    </tr>
+  </thead>`
+    document.getElementById("table-head").innerHTML = head;
 
     outputQ1.setOutput(true);
     outputQ2.setOutput(true);

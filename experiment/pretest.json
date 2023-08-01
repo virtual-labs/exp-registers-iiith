@@ -11,7 +11,10 @@
             },
             "correctAnswer": "a",
             "explanations": {
-              
+              "a" : "A register is a sequential circuit element because it has memory and stores data over time",
+              "b" : "Combinational circuits do not have memory elements and their output depends solely on the current input values. Registers, on the other hand, have memory and can retain information even when the inputs change.",
+              "c" : "Registers are an essential part of a CPU (Central Processing Unit). These registers store data and control signals that are used during the execution of instructions by the CPU.",
+              "d" : "Latches are simple memory elements that can store a single bit of information, while registers are composed of multiple latch stages and can store multiple bits"
             },
             "difficulty": "beginner"
         },
@@ -25,7 +28,10 @@
             },
             "correctAnswer": "d",
             "explanations": {
-               
+                "a" : "PIPO stands for Parallel-In, Parallel-Out register, which means it can accept data in parallel and output data in parallel.",
+                "b" : "SISO stands for Serial-In, Serial-Out register, which means it accepts data serially and outputs data serially.",
+                "c" : "PISO stands for Parallel-In, Serial-Out register, which means it can accept data in parallel and output data serially.",
+                "d" : "This is not commonly used or recognized as a type of register in digital systems"
             },
             "difficulty": "beginner"
         },
@@ -39,21 +45,27 @@
             },
             "correctAnswer": "a",
             "explanations": {
-               
+                "a" : "In a D flip flop, the output (Q) follows the input (D) when a clock signal is applied. In a PIPO shift register, each flip flop in the register holds a parallel data input value and transfers it to the corresponding output when the clock signal is triggered. Therefore, a D flip flop is suitable for this purpose.",
+                "b" : "SR flip flops have two inputs: Set (S) and Reset (R), which can cause unpredictable behavior when both inputs are asserted simultaneously. PIPO shift registers require a more controlled mechanism for data transfer, making SR flip flops less suitable for this application.",
+                "c" : "While JK flip flops can be used in shift registers, they are not typically used in PIPO shift registers.For a PIPO shift register, a simpler flip flop is usually sufficient. ",
+                "d" : "While T flip flops can be used for sequential shifting operations, they are not the most suitable choice for parallel data transfer in a PIPO shift register."
             },
             "difficulty": "beginner"
         },
         {
             "question": "4. What devices have registers used in them",
             "answers": {
-                "a": "COmputer",
+                "a": "Computer",
                 "b": "Calculator",
                 "c": "Electric meter",
                 "d": "All of these"
             },
             "correctAnswer": "d",
             "explanations": {
-               
+                "a" : "Registers are small, high-speed memory units used to store and manipulate data during the execution of instructions by the computer's central processing unit (CPU).",
+                "b" : "Registers help in performing mathematical operations and storing intermediate results during calculations.",
+                "c" : "Registers are used to measure and record electrical consumption data. They may store information such as the total energy usage, peak demand, or time-of-use data.",
+                "d" : "Registers can be found in computers, calculators, and some electric meters."
             },
             "difficulty": "intermediate"
         },

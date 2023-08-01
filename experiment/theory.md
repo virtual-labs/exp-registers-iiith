@@ -3,7 +3,7 @@ Registers can move two types of digital information: parallel and serial. Regist
 
 **FIFO**
 
-A FIFO (First In First Out) is a digital device that moves data in the same way a queue would. The first chunk of information in is moved over as more is loaded in behind it. This continues until it is pushed out the end. Like a grocery line.
+A FIFO (First In First Out) is a digital device that moves data in the same way a queue would. The first chunk of information in is moved over as more is loaded in behind it. This continues until it is pushed out to the end. Like a grocery line.
 
 
 **LIFO**

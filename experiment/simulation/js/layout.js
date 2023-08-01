@@ -107,47 +107,7 @@ function updateToolbar() {
 // Clear observations
 function clearObservations() {
   document.getElementById("table-body").innerHTML = "";
-  let head = "";
-
-  if (window.currentTab === "task1") {
-    head = `<thead id="table-head">
-              <tr>
-                <th colspan="2">Inputs</th>
-                <th colspan="1">Expected Values</th>
-                <th colspan="1">Observed Values</th>
-              </tr>
-              <tr>
-                <th>D</th>
-                <th>Clk</th>
-                <th>Q</th>
-                <th>Q</th>
-              </tr>
-            </thead>`
-  } else if (window.currentTab === "task2") {
-    head = `<thead id="table-head">
-              <tr>
-                <th colspan="5">Inputs</th>
-                <th colspan="4">Observed Values</th>
-              </tr>
-              <tr>
-                <th>P1</th>
-                <th>P2</th>
-                <th>P3</th>
-                <th>P4</th>
-                <th>Clk</th>
-                <th>Q1</th>
-                <th>Q2</th>
-                <th>Q3</th>
-                <th>Q4</th>
-              </tr>
-            </thead>` 
-  }
-  else
-  {
-    console.log("Error: Unknown tab");
-  }
-
-  document.getElementById("table-head").innerHTML = head;
+  document.getElementById("table-head").innerHTML = "";
   document.getElementById("result").innerHTML = "";
 }
 
