@@ -6,8 +6,8 @@ import * as flipflopjs from "./flipflop.js";
 let num_wires = 0;
 
 document.getScroll = function () {
-    if (window.pageYOffset != undefined) {
-        return [pageXOffset, pageYOffset];
+    if (window.scrollY != undefined) {
+        return [scrollX, scrollY];
     } else {
         let sx, sy, d = document,
             r = d.documentElement,
@@ -23,7 +23,7 @@ export const jsPlumbInstance = jsPlumbBrowserUI.newInstance({
     maxConnections: -1,
     endpoint: {
         type: "Dot",
-        options: { radius: 7 },
+        options: { radius: 6 },
     },
     dragOptions: {
         containment: "parentEnclosed",
@@ -1006,7 +1006,15 @@ export function refreshWorkingArea() {
     gatejs.clearGates();
     flipflopjs.clearFlipFlops();
 }
+refresh.addEventListener("click",function(){
+    jsPlumbInstance.reset();
+    window.numComponents = 0;
 
+    gatejs.clearGates();
+    flipflopjs.clearFlipFlops();
+    if(window.currentTab == "task1") initSISO();
+    else initPIPO();
+})
 window.currentTab = "task1";
 connectDFlipFlopGate();
 refreshWorkingArea();
