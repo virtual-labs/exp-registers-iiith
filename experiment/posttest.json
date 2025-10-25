@@ -1,73 +1,73 @@
 {
-    "version": 2.0,
-    "questions": [
-        {
-            "question": "1. How many iterations does a  N input PIPO shift register take to reset the inputs to its original location ?",
-            "answers": {
-                "a": "N",
-                "b": "N/2",
-                "c": "log(N)",
-                "d": "N*N"
-            },
-            "correctAnswer": "a",
-            "explanations": {
-                "a": "In a PIPO shift register, each input is shifted by one position in each clock cycle. To reset the inputs to their original location, all N inputs need to go through N clock cycles. ",
-                "b": "In a PIPO shift register, each clock cycle shifts the inputs by one position. If only N/2 iterations were performed, the inputs would not return to their original location. ",
-                "c": "In the context of resetting the inputs of a PIPO shift register, it is not possible to achieve the desired result in log(N) iterations.",
-                "d": "It suggests a quadratic relationship between the number of inputs and the number of iterations, which is not applicable in this case."
-            },
-            "difficulty": "beginner"
-        },
-        {
-            "question": "2. How many clock cycles are required to serially move a input right by 3 places",
-            "answers": {
-                "a": "3",
-                "b": "4",
-                "c": "2",
-                "d": "1"
-            },
-            "correctAnswer": "b",
-            "explanations": {
-                "a": "It would be impossible to achieve the desired result in just 3 clock cycles",
-                "b": "To move the input right by 3 places, we need to perform three shifts and one shift from input to the first register, and each shift can be done in a single clock cycle. Therefore, the total number of clock cycles required is 4",
-                "c": "It would be impossible to achieve the desired result in just two clock cycles as it just shifts the input bit from input to register and then shifts it by 1 place",
-                "d": "It would be impossible to achieve the desired result in just one clock cycles as it is enough to just take the input bit and give the first register output."
-            },
-            "difficulty": "intermediate"
-        },
-        {
-            "question": "3.What is the full form of PIPO",
-            "answers": {
-                "a": "Parallel In Parallel Out ",
-                "b": "Serial In Parallel Out ",
-                "c": "Parallel In Serial Out",
-                "d": "Parallel Input Parallel Output"
-            },
-            "correctAnswer": "a",
-            "explanations": {
-                "a": "PIPO stands for Parallel In Parallel Out, which refers to a type of shift register where data in both input and output is parallel.",
-                "b": "The full form of SIPO is Serial In Parallel Out.",
-                "c": "The full form of PISO is Parallel In Serial Out.",
-                "d": "It does not represent the full form of PIPO correctly."
-            },
-            "difficulty": "intermediate"
-        },
-        {
-            "question": "4. If I1=1,I2=1,I3=0,I4=1 in a PIPO register , what is the value of I3 after 2 clock cycles ?",
-            "answers": {
-                "a": "1",
-                "b": "0",
-                "c": "I1",
-                "d": "Both a and c"
-            },
-            "correctAnswer": "a",
-            "explanations": {
-                "a": "In a PIPO (Parallel In, Parallel Out) register, the output shifts by one position for each clock cycle. After two clock cycles, the value of I3 would be the same as the value of I1 in the initial state. Since I1 is initially 1, the value of I3 after two clock cycles would be 1.",
-                "b": "Based on the shifting behavior of a PIPO register, the value of I3 is not always equal to it's initial value.",
-                "c": "In a PIPO register, there is no direct connection or dependency between I1 and I3. Each input bit is loaded independently, and the shifting behavior is determined by the clock cycles. Therefore, the value of I1 does not affect the value of I3 after two clock cycles",
-                "d": "Option c is incorrect because the value of I3 is not influenced by I1"
-            },
-            "difficulty": "advanced"
-        }
-    ]
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "1. How many iterations does an N input PIPO shift register take to reset the inputs to its original location?",
+      "answers": {
+        "a": "N",
+        "b": "N/2",
+        "c": "log(N)",
+        "d": "N*N"
+      },
+      "correctAnswer": "a",
+      "explanations": {
+        "a": "Correct. In a PIPO shift register, each input is shifted by one position in each clock cycle. To reset the inputs to their original location, all N inputs need to go through N clock cycles.",
+        "b": "Incorrect. In a PIPO shift register, each clock cycle shifts the inputs by one position. If only N/2 iterations were performed, the inputs would not return to their original location.",
+        "c": "Incorrect. In the context of resetting the inputs of a PIPO shift register, it is not possible to achieve the desired result in log(N) iterations.",
+        "d": "Incorrect. This suggests a quadratic relationship between the number of inputs and the number of iterations, which is not applicable in this case."
+      },
+      "difficulty": "beginner"
+    },
+    {
+      "question": "2. How many clock cycles are required to serially move an input right by 3 places?",
+      "answers": {
+        "a": "3",
+        "b": "4",
+        "c": "2",
+        "d": "1"
+      },
+      "correctAnswer": "a",
+      "explanations": {
+        "a": "Correct. To move the input right by 3 places in a serial shift register, exactly 3 clock cycles are required. The shift from input to the first register is part of the shifting operation, not a separate step.",
+        "b": "Incorrect. This would be counting the input-to-register transfer as a separate operation, which is incorrect. Only 3 clock cycles are needed.",
+        "c": "Incorrect. Two clock cycles would only move the input right by 2 places, not 3 places.",
+        "d": "Incorrect. One clock cycle would only move the input right by 1 place, not 3 places."
+      },
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "3. What is the full form of PIPO?",
+      "answers": {
+        "a": "Parallel In Parallel Out",
+        "b": "Serial In Parallel Out",
+        "c": "Parallel In Serial Out",
+        "d": "Parallel Input Parallel Output"
+      },
+      "correctAnswer": "a",
+      "explanations": {
+        "a": "Correct. PIPO stands for Parallel In Parallel Out, which refers to a type of register where data is loaded and read in parallel.",
+        "b": "Incorrect. The full form of SIPO is Serial In Parallel Out.",
+        "c": "Incorrect. The full form of PISO is Parallel In Serial Out.",
+        "d": "Incorrect. This is not the standard abbreviation format used in digital electronics."
+      },
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "4. If I1=1, I2=1, I3=0, I4=1 in a PIPO register, then what is the output of the 3rd flip flop after 2 clock cycles?",
+      "answers": {
+        "a": "1",
+        "b": "0",
+        "c": "I1",
+        "d": "Both a and c"
+      },
+      "correctAnswer": "b",
+      "explanations": {
+        "a": "Incorrect. In a PIPO register, data is loaded and stored in parallel, not shifted. The 3rd flip flop retains its original value.",
+        "b": "Correct. In a PIPO (Parallel In, Parallel Out) register, data is loaded in parallel and remains stable until new data is loaded. The 3rd flip flop maintains its initial value of 0.",
+        "c": "Incorrect. In a PIPO register, there is no shifting operation. Each flip flop maintains its loaded value independently.",
+        "d": "Incorrect. Option c is incorrect because PIPO registers do not perform shifting operations between flip flops."
+      },
+      "difficulty": "advanced"
+    }
+  ]
 }

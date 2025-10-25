@@ -1,1 +1,15 @@
-This module explains about how to build registers which are the units of memory storage in computers. In computer architecture, a processor register is a small amount of storage available as part of a CPU or other digital processor. Such registers are (typically) addressed by other mechanisms than main memory and can be accessed more quickly. Almost all computers, load-store architecture or not, load data from a larger memory into registers where it is used for arithmetic, manipulated, or tested, by some machine instruction. Manipulated data is then often stored back in main memory, either by the same instruction or a subsequent one.
+The aim of this experiment is to understand and implement different types of register circuits used in digital systems.
+
+### What you will learn:
+
+Through this interactive experiment, you will:
+
+- **Understand the fundamentals** of register design and memory storage in digital circuits
+- **Design and analyze** basic register circuits for data storage and manipulation
+- **Construct shift registers** for data movement and serial-to-parallel conversion
+- **Build counter circuits** using registers for counting and timing applications
+- **Explore real-world applications** of registers in processors, memory systems, and digital controllers
+
+### Why are registers important?
+
+Registers are fundamental building blocks in digital systems and serve as the primary storage units in computer architecture. They are essential components not only in processors and memory systems, but also throughout digital circuits for temporary data storage, state maintenance, and data manipulation. Almost all computers, whether load-store architecture or not, load data from memory into registers where it is used for arithmetic, manipulated, or tested by machine instructions. Manipulated data is then often stored back in main memory, either by the same instruction or a subsequent one. Understanding register circuits will give you insight into how computers store and manage data at the most fundamental level.
