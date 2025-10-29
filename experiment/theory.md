@@ -93,10 +93,28 @@ This can be implemented using:
 
 #### Control Signal Operation
 
-| LOAD | Operation | Next State        |
-| ---- | --------- | ----------------- |
-| 0    | Hold      | Q = Current Value |
-| 1    | Load      | Q = D (New Data)  |
+| LOAD | Operation | Next State        | Description                    |
+| ---- | --------- | ----------------- | ------------------------------ |
+| 0    | Hold      | Q = Current Value | Data preserved, inputs ignored |
+| 1    | Load      | Q = D (New Data)  | New data loaded on clock edge  |
+
+#### PIPO Register Example
+
+**Scenario**: 4-bit parallel register with inputs P₃P₂P₁P₀ = 1010
+
+**LOAD = 1, Clock Edge**:
+
+- All flip-flops load simultaneously
+- Q₃ = P₃ = 1, Q₂ = P₂ = 0, Q₁ = P₁ = 1, Q₀ = P₀ = 0
+- Result: Register stores 1010 in one clock cycle
+
+**LOAD = 0, Clock Edge**:
+
+- All flip-flops retain previous values
+- Parallel inputs P₃P₂P₁P₀ are ignored
+- Register continues to hold 1010
+
+This parallel operation is much faster than serial loading, making it ideal for processor registers and data storage applications.
 
 #### Applications
 
@@ -182,6 +200,24 @@ $$Q_0(n+1) = \text{Serial\_Input}$$
 | 1     | 0            | 0   | 1   | 0   | 1   | 1             |
 | 2     | 1            | 1   | 0   | 1   | 0   | 1             |
 | 3     | 0            | 0   | 1   | 0   | 1   | 0             |
+
+#### Step-by-Step SISO Operation
+
+**Initial State**: Register contains 1011 (Q₃Q₂Q₁Q₀)
+
+**Clock Pulse 1** (Serial Input = 0):
+
+- New bit 0 enters Q₃
+- Q₃ → Q₂, Q₂ → Q₁, Q₁ → Q₀
+- Result: 0101, Serial Output = 1
+
+**Clock Pulse 2** (Serial Input = 1):
+
+- New bit 1 enters Q₃
+- Data shifts right again
+- Result: 1010, Serial Output = 1
+
+This demonstrates how data moves through the register with each clock pulse, creating a delay line effect.
 
 #### Applications
 

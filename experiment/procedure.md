@@ -10,21 +10,22 @@ _Figure 1: 4-bit SISO shift register circuit diagram showing 4 D flip-flops conn
 
 - 4 D Flip-Flops
 - Input bits: D (Serial Input), Clk (Clock)
-- Output bit: Q (Serial Output)
+- Output bits: Q1, Q2, Q3, Q4 (showing data progression through each flip-flop stage)
 
 #### Circuit Connections
 
-1. Drag the first D Flip-Flop and connect its Clk input point to the **Clk** input bit and its D input point to the **D** input bit.
-2. Drag the second D Flip-Flop and connect its Clk input point to the **Clk** input bit and its D input point to the Q output point of the first D Flip-Flop.
-3. Drag the third D Flip-Flop and connect its Clk input point to the **Clk** input bit and its D input point to the Q output point of the second D Flip-Flop.
-4. Drag the fourth D Flip-Flop and connect its Clk input point to the **Clk** input bit and its D input point to the Q output point of the third D Flip-Flop.
-5. Connect the Q output point of the fourth D Flip-Flop to the **Q** output bit.
-6. Set the value of D (double-click to toggle), click on "Simulate" and observe the output Q with varying clock values.
+1. Drag the first D Flip-Flop and connect its Clk input point to the **Clk** input bit and its D input point to the **D** input bit. Connect its Q output point to the **Q1** output bit.
+2. Drag the second D Flip-Flop and connect its Clk input point to the **Clk** input bit and its D input point to the Q output point of the first D Flip-Flop. Connect its Q output point to the **Q2** output bit.
+3. Drag the third D Flip-Flop and connect its Clk input point to the **Clk** input bit and its D input point to the Q output point of the second D Flip-Flop. Connect its Q output point to the **Q3** output bit.
+4. Drag the fourth D Flip-Flop and connect its Clk input point to the **Clk** input bit and its D input point to the Q output point of the third D Flip-Flop. Connect its Q output point to the **Q4** output bit.
+5. Set the value of D (double-click to toggle), click on "Simulate" and observe the outputs Q1, Q2, Q3, Q4 with varying clock values.
 
 #### Observations
 
-- When Clk is 0, the output bit Q remains unchanged. When Clk transitions from 0 to 1 (positive edge), the data shifts through the register by one position.
-- The serial data input D is shifted through each flip-flop stage with each clock pulse, creating a 4-clock cycle delay from input to output.
+- When Clk is 0, all output bits remain unchanged. When Clk transitions from 0 to 1 (positive edge), data shifts through the register by one position.
+- **Data Flow Visualization**: Q1 shows the most recent input, Q2 shows data delayed by 1 clock cycle, Q3 shows data delayed by 2 clock cycles, and Q4 shows data delayed by 3 clock cycles.
+- The serial data input D is shifted through each flip-flop stage with each clock pulse, creating a visible progression through Q1 → Q2 → Q3 → Q4.
+- After 4 complete clock cycles, the original input data will appear at Q4 output.
 - If the circuit has been made as described above, a "Success" message will be displayed upon clicking "Submit".
 
 ### Task 2: 4-bit Parallel Input Parallel Output (PIPO) Register
