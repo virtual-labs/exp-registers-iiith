@@ -125,10 +125,6 @@ This parallel operation is much faster than serial loading, making it ideal for 
 
 ### Shift Registers
 
-<img src="images/shift-register.png" alt="Shift Register Circuit Diagram">
-
-_Figure 3: Shift Register circuit diagram showing serial data movement through connected flip-flops. Reference: Sequential data processing implementation_
-
 Shift registers are sequential circuits that can move data in a specific direction (left or right) with each clock pulse. They are fundamental building blocks for serial data transmission, data conversion, and arithmetic operations like multiplication and division.
 
 #### Types of Shift Registers
@@ -231,7 +227,7 @@ This demonstrates how data moves through the register with each clock pulse, cre
 
 <img src="images/bidirectional_shift_register.png" alt="Bidirectional Shift Register Circuit Diagram">
 
-_Figure 4: Bidirectional Shift Register circuit diagram showing multiplexer-based control for left/right shift operations. Reference: Advanced sequential processing implementation_
+_Figure 3: Bidirectional Shift Register circuit diagram showing multiplexer-based control for left/right shift operations. Reference: Advanced sequential processing implementation_
 
 A bidirectional shift register can shift data in either direction (left or right) based on a control signal. This versatility makes it useful in applications requiring flexible data movement and arithmetic operations.
 

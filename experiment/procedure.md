@@ -2,7 +2,7 @@
 
 #### Circuit Diagram
 
-<img src="images/shift-register.png" alt="SISO Shift Register Circuit Diagram">
+<img src="images/siso.png" alt="SISO Shift Register Circuit Diagram">
 
 _Figure 1: 4-bit SISO shift register circuit diagram showing 4 D flip-flops connected in series with common clock input. Reference: Theory section_
 
