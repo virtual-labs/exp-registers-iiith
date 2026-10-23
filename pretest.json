@@ -1,0 +1,90 @@
+{
+  "version": 2.0,
+  "questions": [
+    {
+      "question": "1. A register classifies under:",
+      "answers": {
+        "a": "Sequential circuit",
+        "b": "Combinational circuit",
+        "c": "CPU",
+        "d": "Latches"
+      },
+      "correctAnswer": "a",
+      "explanations": {
+        "a": "Correct. A register is a sequential circuit element because it has memory and stores data over time, with outputs dependent on both current inputs and previous state.",
+        "b": "Incorrect. Combinational circuits do not have memory elements and their output depends solely on the current input values. Registers, on the other hand, have memory and can retain information even when the inputs change.",
+        "c": "Incorrect. While registers are an essential part of a CPU (Central Processing Unit), they are not classified as CPUs themselves but as components within CPUs.",
+        "d": "Incorrect. Although latches are simple memory elements that can store a single bit of information, registers are composed of multiple flip-flops and are more complex than individual latches."
+      },
+      "difficulty": "beginner"
+    },
+    {
+      "question": "2. Which of the following devices have registers used in them:",
+      "answers": {
+        "a": "Computer processors",
+        "b": "Digital calculators",
+        "c": "Smart electric meters",
+        "d": "All of the above"
+      },
+      "correctAnswer": "d",
+      "explanations": {
+        "a": "Incorrect but partially correct. Computer processors extensively use registers as small, high-speed memory units to store and manipulate data during instruction execution, but this is not the complete answer.",
+        "b": "Incorrect but partially correct. Digital calculators use registers to perform mathematical operations and store intermediate results during calculations, but this is not the complete answer.",
+        "c": "Incorrect but partially correct. Smart electric meters use registers to measure, record, and store electrical consumption data including total energy usage, peak demand, and time-of-use information, but this is not the complete answer.",
+        "d": "Correct. Registers are fundamental components found in computer processors, digital calculators, smart electric meters, and many other digital electronic devices for data storage and manipulation."
+      },
+      "difficulty": "intermediate"
+    },
+    {
+      "question": "3. PIPO shift registers primarily use which type of flip-flop:",
+      "answers": {
+        "a": "D flip-flop",
+        "b": "SR flip-flop",
+        "c": "JK flip-flop",
+        "d": "T flip-flop"
+      },
+      "correctAnswer": "a",
+      "explanations": {
+        "a": "Correct. D flip-flops are ideal for PIPO registers because the output (Q) directly follows the input (D) when clocked, providing controlled and predictable data transfer for parallel operations.",
+        "b": "Incorrect. SR flip-flops have two inputs (Set and Reset) which can cause unpredictable behavior when both inputs are asserted simultaneously, making them less suitable for reliable parallel data transfer.",
+        "c": "Incorrect. While JK flip-flops can be used in some register applications, they are unnecessarily complex for PIPO operations where simpler D flip-flops are more appropriate and efficient.",
+        "d": "Incorrect. T flip-flops are toggle flip-flops primarily used for counting operations, not for parallel data storage and transfer required in PIPO registers."
+      },
+      "difficulty": "beginner"
+    },
+    {
+      "question": "4. In digital circuits, how many basic types of shift registers are classified based on input/output data flow:",
+      "answers": {
+        "a": "2 types",
+        "b": "3 types",
+        "c": "4 types",
+        "d": "5 types"
+      },
+      "correctAnswer": "c",
+      "explanations": {
+        "a": "Incorrect. There are more than 2 basic types when considering all input/output combinations.",
+        "b": "Incorrect. There are more than 3 basic types when considering all input/output combinations.",
+        "c": "Correct. There are 4 basic types of shift registers based on input/output data flow: SISO (Serial-In-Serial-Out), SIPO (Serial-In-Parallel-Out), PISO (Parallel-In-Serial-Out), and PIPO (Parallel-In-Parallel-Out).",
+        "d": "Incorrect. There are only 4 fundamental types based on the basic input/output data flow patterns."
+      },
+      "difficulty": "advanced"
+    },
+    {
+      "question": "5. When both input bits A and B are logic 1 in a basic storage register with parallel load, and the LOAD signal is 0, what happens to the stored data:",
+      "answers": {
+        "a": "Data is updated to 11",
+        "b": "Data is cleared to 00",
+        "c": "Data remains unchanged",
+        "d": "Data becomes unpredictable"
+      },
+      "correctAnswer": "c",
+      "explanations": {
+        "a": "Incorrect. When LOAD = 0, the register ignores input data and does not update its contents regardless of input values.",
+        "b": "Incorrect. LOAD = 0 does not clear the register; it maintains the existing stored values.",
+        "c": "Correct. When LOAD = 0 (hold mode), the register retains its current contents and ignores any changes in the input data, maintaining the previously stored information.",
+        "d": "Incorrect. The behavior is well-defined and predictable - the register simply holds its current state when LOAD = 0."
+      },
+      "difficulty": "intermediate"
+    }
+  ]
+}
