@@ -3,7 +3,7 @@ import { wireColours, setPosition } from "./layout.js";
 import "./layout.js"; // Import layout.js to execute changeTabs setup and other global functions
 import * as clockjs from "./clock.js";
 import * as flipflopjs from "./flipflop.js";
-import { testSISO, testSISO4bit, testPIPO } from "./validator.js";
+import { testSISO4bit, testPIPO } from "./validator.js";
 ("use strict");
 
 let num_wires = 0;
@@ -96,222 +96,130 @@ jsPlumbInstance.bind("connection", function (info) {
   }
 });
 
-export const connectGate = function () {
-  jsPlumbInstance.bind("beforeDrop", function (data) {
-    const fromEndpoint = data.connection.endpoints[0];
-    const toEndpoint = data.dropEndpoint;
+// Returns the component (gate, input/output bit, clock or D flip-flop) with the given id
+function findComponent(id) {
+  return gatejs.gates[id] || flipflopjs.flipFlops[id] || null;
+}
 
-    const start_uuid = fromEndpoint.uuid.split(":")[0];
-    const end_uuid = toEndpoint.uuid.split(":")[0];
+function isFlipFlop(component) {
+  return component && component.constructor.name === "DFlipFlop";
+}
 
-    // Prevent self-connection
-    if (fromEndpoint.elementId === toEndpoint.elementId) {
-      return false;
-    }
+// Returns the id of the label overlay of an endpoint (the pin name); it is empty for gates and input/output bits
+function pinLabel(endpoint) {
+  const keys = Object.keys(endpoint.overlays || {});
+  return keys.length > 0 ? keys[0] : "";
+}
 
-    // Prevent invalid connections
-    if (start_uuid === "input" && end_uuid === "input") {
-      return false;
-    } else if (start_uuid === "output" && end_uuid === "output") {
-      return false;
-    } else if (
-      (end_uuid === "input" && toEndpoint.connections.length > 0) ||
-      (start_uuid === "input" && fromEndpoint.connections.length > 1)
-    ) {
-      // If it already has a connection, do not establish a new connection
-      return false;
+// Tells which output of a component a wire starts from: "Q" or "Q'" for a flip-flop, "" for everything else
+function outputPos(component, endpoint) {
+  if (isFlipFlop(component)) {
+    return pinLabel(endpoint).includes("qbarout") ? "Q'" : "Q";
+  }
+  return "";
+}
+
+// Returns the output endpoint and the input endpoint of a wire, whichever way it was drawn
+function splitEndpoints(epA, epB) {
+  return epA.uuid.startsWith("output") ? [epA, epB] : [epB, epA];
+}
+
+// Records a new wire in the circuit model. It works the same for gates, input/output bits, the clock and the
+// D flip-flops, and for both directions in which a wire can be dragged.
+function linkEndpoints(fromEndpoint, toEndpoint) {
+  const [outEp, inEp] = splitEndpoints(fromEndpoint, toEndpoint);
+  const driver = findComponent(outEp.elementId);
+  const sink = findComponent(inEp.elementId);
+  if (!driver || !sink) {
+    return;
+  }
+  const pos = outputPos(driver, outEp);
+
+  // the component that drives the wire
+  if (isFlipFlop(driver)) {
+    if (pos === "Q") {
+      driver.addqOutput(sink);
     } else {
-      // Create connection with colored wire
-      jsPlumbInstance.connect({
-        uuids: [fromEndpoint.uuid, toEndpoint.uuid],
-        paintStyle: { stroke: wireColours[num_wires], strokeWidth: 4 },
-      });
+      driver.addqbarOutput(sink);
+    }
+    driver.setConnected(true, pos);
+  } else {
+    driver.addOutput(sink);
+    driver.setConnected(true);
+  }
 
-      num_wires++;
-      num_wires = num_wires % wireColours.length;
+  // the component that receives the wire
+  if (isFlipFlop(sink)) {
+    const pin = pinLabel(inEp);
+    if (pin.includes("din")) {
+      sink.setD([driver, pos]);
+    } else if (pin.includes("clk")) {
+      sink.setClk([driver, pos]);
+    }
+  } else {
+    sink.addInput(driver, pos);
+  }
+}
 
-      // Update gate connections
-      if (start_uuid === "output") {
-        const input = gatejs.gates[fromEndpoint.elementId];
-        input.isConnected = true;
-        gatejs.gates[toEndpoint.elementId].addInput(input, "");
-        input.addOutput(gatejs.gates[toEndpoint.elementId]);
-      } else if (end_uuid === "output") {
-        const input = gatejs.gates[toEndpoint.elementId];
-        input.isConnected = true;
-        gatejs.gates[fromEndpoint.elementId].addInput(input, "");
-        input.addOutput(gatejs.gates[fromEndpoint.elementId]);
-      }
-    }
-  });
-};
+// Removes a single occurrence of item from list
+function removeOne(list, item) {
+  const index = list.indexOf(item);
+  if (index !== -1) {
+    list.splice(index, 1);
+  }
+}
 
-// Helper functions for enhanced connection handling
-function handleFlipFlopToFlipFlopConnection(
-  fromEndpoint,
-  toEndpoint,
-  start_uuid,
-  end_uuid
-) {
-  if (start_uuid === "output") {
-    const input = flipflopjs.flipFlops[fromEndpoint.elementId];
-    let pos = "";
-    if (Object.keys(fromEndpoint.overlays)[0].includes("qout")) {
-      pos = "Q";
-      input.addqOutput(flipflopjs.flipFlops[toEndpoint.elementId]);
-    } else if (Object.keys(fromEndpoint.overlays)[0].includes("qbarout")) {
-      pos = "Q'";
-      input.addqbarOutput(flipflopjs.flipFlops[toEndpoint.elementId]);
+// Removes a deleted wire from the circuit model
+function unlinkEndpoints(connection, epA, epB) {
+  if (!epA || !epB || !epA.uuid || !epB.uuid) {
+    return;
+  }
+  const [outEp, inEp] = splitEndpoints(epA, epB);
+  if (!outEp.uuid.startsWith("output") || !inEp.uuid.startsWith("input")) {
+    return;
+  }
+  const driver = findComponent(outEp.elementId);
+  const sink = findComponent(inEp.elementId);
+  if (!driver || !sink) {
+    return;
+  }
+  const pos = outputPos(driver, outEp);
+  // the driver stays connected only if it has another wire
+  const lastWire = outEp.connections.filter((c) => c !== connection).length === 0;
+
+  if (isFlipFlop(driver)) {
+    removeOne(pos === "Q" ? driver.qOutputs : driver.qbarOutputs, sink);
+  } else {
+    removeOne(driver.outputs, sink);
+  }
+  if (lastWire) {
+    driver.setConnected(false, pos);
+  }
+
+  if (isFlipFlop(sink)) {
+    const pin = pinLabel(inEp);
+    if (pin.includes("din")) {
+      sink.setD([]);
+    } else if (pin.includes("clk")) {
+      sink.setClk([]);
     }
-    input.setConnected(true, pos);
-    if (Object.keys(toEndpoint.overlays)[0].includes("din")) {
-      flipflopjs.flipFlops[toEndpoint.elementId].setD([input, pos]);
-    } else if (Object.keys(toEndpoint.overlays)[0].includes("clk")) {
-      flipflopjs.flipFlops[toEndpoint.elementId].setClk([input, pos]);
-    }
-  } else if (end_uuid === "output") {
-    const input = flipflopjs.flipFlops[toEndpoint.elementId];
-    let pos = "";
-    if (Object.keys(toEndpoint.overlays)[0].includes("qout")) {
-      pos = "Q";
-      input.addqOutput(flipflopjs.flipFlops[fromEndpoint.elementId]);
-    } else if (Object.keys(toEndpoint.overlays)[0].includes("qbarout")) {
-      pos = "Q'";
-      input.addqbarOutput(flipflopjs.flipFlops[fromEndpoint.elementId]);
-    }
-    input.setConnected(true, pos);
-    if (Object.keys(fromEndpoint.overlays)[0].includes("din")) {
-      flipflopjs.flipFlops[fromEndpoint.elementId].setD([input, pos]);
-    } else if (Object.keys(fromEndpoint.overlays)[0].includes("clk")) {
-      flipflopjs.flipFlops[fromEndpoint.elementId].setClk([input, pos]);
+  } else {
+    const index = sink.inputs.findIndex(
+      (pair) => pair[0] === driver && pair[1] === pos
+    );
+    if (index !== -1) {
+      sink.inputs.splice(index, 1);
     }
   }
 }
 
-function handleFlipFlopToInputConnection(fromEndpoint, toEndpoint, end_uuid) {
-  if (end_uuid === "output") {
-    const input = gatejs.gates[toEndpoint.elementId];
-    input.setConnected(true);
-    let pos = "";
-    if (Object.keys(fromEndpoint.overlays)[0].includes("din")) {
-      flipflopjs.flipFlops[fromEndpoint.elementId].setD([input, pos]);
-    } else if (Object.keys(fromEndpoint.overlays)[0].includes("clk")) {
-      flipflopjs.flipFlops[fromEndpoint.elementId].setClk([input, pos]);
-    }
-    input.addOutput(flipflopjs.flipFlops[fromEndpoint.elementId]);
-  }
-}
+// Keep the circuit model in sync when a wire is deleted
+jsPlumbInstance.bind("connection:detach", function (info) {
+  unlinkEndpoints(info.connection, info.sourceEndpoint, info.targetEndpoint);
+});
 
-function handleInputToFlipFlopConnection(fromEndpoint, toEndpoint, start_uuid) {
-  if (start_uuid === "output") {
-    const input = gatejs.gates[fromEndpoint.elementId];
-    input.setConnected(true);
-    let pos = "";
-    if (Object.keys(toEndpoint.overlays)[0].includes("din")) {
-      flipflopjs.flipFlops[toEndpoint.elementId].setD([input, pos]);
-    } else if (Object.keys(toEndpoint.overlays)[0].includes("clk")) {
-      flipflopjs.flipFlops[toEndpoint.elementId].setClk([input, pos]);
-    }
-    input.addOutput(flipflopjs.flipFlops[toEndpoint.elementId]);
-  }
-}
-
-function handleFlipFlopToOutputConnection(
-  fromEndpoint,
-  toEndpoint,
-  start_uuid
-) {
-  if (start_uuid === "output") {
-    const input = flipflopjs.flipFlops[fromEndpoint.elementId];
-    const output = gatejs.gates[toEndpoint.elementId];
-    let pos = "";
-    if (Object.keys(fromEndpoint.overlays)[0].includes("qout")) {
-      pos = "Q";
-      input.addqOutput(gatejs.gates[toEndpoint.elementId]);
-    } else if (Object.keys(fromEndpoint.overlays)[0].includes("qbarout")) {
-      pos = "Q'";
-      input.addqbarOutput(gatejs.gates[toEndpoint.elementId]);
-    }
-    input.setConnected(true, pos);
-    output.addInput(input, pos);
-  }
-}
-
-function handleOutputToFlipFlopConnection(
-  fromEndpoint,
-  toEndpoint,
-  start_uuid
-) {
-  if (start_uuid === "input") {
-    const input = flipflopjs.flipFlops[toEndpoint.elementId];
-    const output = gatejs.gates[fromEndpoint.elementId];
-    let pos = "";
-    if (Object.keys(toEndpoint.overlays)[0].includes("qout")) {
-      pos = "Q";
-      input.addqOutput(gatejs.gates[fromEndpoint.elementId]);
-    } else if (Object.keys(toEndpoint.overlays)[0].includes("qbarout")) {
-      pos = "Q'";
-      input.addqbarOutput(output);
-    }
-    input.setConnected(true, pos);
-    output.addInput(input, pos);
-  }
-}
-
-function handleInputToOutputConnection(fromEndpoint, toEndpoint, start_uuid) {
-  if (start_uuid === "output") {
-    const input = gatejs.gates[fromEndpoint.elementId];
-    const output = gatejs.gates[toEndpoint.elementId];
-    input.setConnected(true);
-    output.addInput(input, "");
-    input.addOutput(output);
-  }
-}
-
-function handleOutputToInputConnection(fromEndpoint, toEndpoint, start_uuid) {
-  if (start_uuid === "input") {
-    const input = gatejs.gates[toEndpoint.elementId];
-    const output = gatejs.gates[fromEndpoint.elementId];
-    input.setConnected(true);
-    output.addInput(input, "");
-    input.addOutput(output);
-  }
-}
-
-function handleFlipFlopToGateConnection(fromEndpoint, toEndpoint, start_uuid) {
-  if (start_uuid === "output") {
-    const input = flipflopjs.flipFlops[fromEndpoint.elementId];
-    const output = gatejs.gates[toEndpoint.elementId];
-    let pos = "";
-    if (Object.keys(fromEndpoint.overlays)[0].includes("qout")) {
-      pos = "Q";
-      input.addqOutput(gatejs.gates[toEndpoint.elementId]);
-    } else if (Object.keys(fromEndpoint.overlays)[0].includes("qbarout")) {
-      pos = "Q'";
-      input.addqbarOutput(gatejs.gates[toEndpoint.elementId]);
-    }
-    input.setConnected(true, pos);
-    output.addInput(input, pos);
-  }
-}
-
-function handleGateToFlipFlopConnection(fromEndpoint, toEndpoint, end_uuid) {
-  if (end_uuid === "input") {
-    const input = gatejs.gates[fromEndpoint.elementId];
-    const flipFlop = flipflopjs.flipFlops[toEndpoint.elementId];
-    input.setConnected(true);
-    let pos = "";
-    if (Object.keys(toEndpoint.overlays)[0].includes("din")) {
-      flipFlop.setD([input, pos]);
-    } else if (Object.keys(toEndpoint.overlays)[0].includes("clk")) {
-      flipFlop.setClk([input, pos]);
-    }
-    input.addOutput(flipFlop);
-  }
-}
-
-// Enhanced D Flip Flop and gates connection with comprehensive validation
 export const connectDFlipFlopGate = function () {
+  jsPlumbInstance.unbind("beforeDrop");
   jsPlumbInstance.bind("beforeDrop", function (data) {
     const fromEndpoint = data.connection.endpoints[0];
     const toEndpoint = data.dropEndpoint;
@@ -321,125 +229,11 @@ export const connectDFlipFlopGate = function () {
 
     // Prevent self-connection
     if (fromEndpoint.elementId === toEndpoint.elementId) {
-      console.warn("Cannot connect component to itself");
       return false;
     }
 
     // Prevent invalid connections
     if (start_uuid === "input" && end_uuid === "input") {
-      console.warn("Cannot connect input to input");
-      return false;
-    } else if (start_uuid === "output" && end_uuid === "output") {
-      console.warn("Cannot connect output to output");
-      return false;
-    } else if (
-      (end_uuid === "input" && toEndpoint.connections.length > 0) ||
-      (start_uuid === "input" && fromEndpoint.connections.length > 1)
-    ) {
-      console.warn("Connection already exists or exceeds maximum connections");
-      return false;
-    } else {
-      // Create connection with validation
-      try {
-        jsPlumbInstance.connect({
-          uuids: [fromEndpoint.uuid, toEndpoint.uuid],
-          paintStyle: { stroke: wireColours[num_wires], strokeWidth: 4 },
-        });
-
-        num_wires++;
-        num_wires = num_wires % wireColours.length;
-
-        const start_type = fromEndpoint.elementId.split("-")[0];
-        let end_type = toEndpoint.elementId.split("-")[0];
-
-        // Handle clock components
-        if (end_type === "Clock") {
-          end_type = "Input";
-        }
-
-        // Enhanced connection logic with better error handling
-        if (start_type === "DFlipFlop" && end_type === "DFlipFlop") {
-          handleFlipFlopToFlipFlopConnection(
-            fromEndpoint,
-            toEndpoint,
-            start_uuid,
-            end_uuid
-          );
-        } else if (start_type === "DFlipFlop" && end_type === "Input") {
-          handleFlipFlopToInputConnection(fromEndpoint, toEndpoint, end_uuid);
-        } else if (start_type === "Input" && end_type === "DFlipFlop") {
-          handleInputToFlipFlopConnection(fromEndpoint, toEndpoint, start_uuid);
-        } else if (start_type === "DFlipFlop" && end_type === "Output") {
-          handleFlipFlopToOutputConnection(
-            fromEndpoint,
-            toEndpoint,
-            start_uuid
-          );
-        } else if (start_type === "Output" && end_type === "DFlipFlop") {
-          handleOutputToFlipFlopConnection(
-            fromEndpoint,
-            toEndpoint,
-            start_uuid
-          );
-        } else if (start_type === "Input" && end_type === "Output") {
-          handleInputToOutputConnection(fromEndpoint, toEndpoint, start_uuid);
-        } else if (start_type === "Output" && end_type === "Input") {
-          handleOutputToInputConnection(fromEndpoint, toEndpoint, start_uuid);
-        } else if (
-          start_type === "DFlipFlop" &&
-          toEndpoint.elementId in gatejs.gates
-        ) {
-          handleFlipFlopToGateConnection(fromEndpoint, toEndpoint, start_uuid);
-        } else if (
-          end_type === "DFlipFlop" &&
-          fromEndpoint.elementId in gatejs.gates
-        ) {
-          handleGateToFlipFlopConnection(fromEndpoint, toEndpoint, end_uuid);
-        } else if (
-          fromEndpoint.elementId in gatejs.gates &&
-          toEndpoint.elementId in gatejs.gates
-        ) {
-          // Handle gate to gate connections
-          if (start_uuid === "output") {
-            const input = gatejs.gates[fromEndpoint.elementId];
-            const output = gatejs.gates[toEndpoint.elementId];
-            input.setConnected(true);
-            output.addInput(input, "");
-            input.addOutput(output);
-          } else if (end_uuid === "output") {
-            const input = gatejs.gates[toEndpoint.elementId];
-            const output = gatejs.gates[fromEndpoint.elementId];
-            input.setConnected(true);
-            output.addInput(input, "");
-            input.addOutput(output);
-          }
-        }
-
-        console.log(
-          `✅ Connected ${fromEndpoint.elementId} to ${toEndpoint.elementId}`
-        );
-        return true;
-      } catch (error) {
-        console.error("Connection failed:", error);
-        return false;
-      }
-    }
-  });
-};
-
-export const connectTFlipFlopGate = function () {
-  jsPlumbInstance.bind("beforeDrop", function (data) {
-    const fromEndpoint = data.connection.endpoints[0];
-    const toEndpoint = data.dropEndpoint;
-
-    const start_uuid = fromEndpoint.uuid.split(":")[0];
-    const end_uuid = toEndpoint.uuid.split(":")[0];
-
-    if (fromEndpoint.elementId === toEndpoint.elementId) {
-      return false;
-    }
-
-    if (start_uuid === "input" && end_uuid === "input") {
       return false;
     } else if (start_uuid === "output" && end_uuid === "output") {
       return false;
@@ -447,250 +241,18 @@ export const connectTFlipFlopGate = function () {
       (end_uuid === "input" && toEndpoint.connections.length > 0) ||
       (start_uuid === "input" && fromEndpoint.connections.length > 1)
     ) {
-      // If it already has a connection, do not establish a new connection
+      // An input pin takes one wire only
       return false;
-    } else {
-      jsPlumbInstance.connect({
-        uuids: [fromEndpoint.uuid, toEndpoint.uuid],
-        paintStyle: { stroke: wireColours[num_wires], strokeWidth: 4 },
-      });
-      num_wires++;
-      num_wires = num_wires % wireColours.length;
-      const start_type = fromEndpoint.elementId.split("-")[0];
-      let end_type = toEndpoint.elementId.split("-")[0];
-      if (end_type === "Clock") {
-        end_type = "Input";
-      }
-      if (start_type === "JKFlipFlop" && end_type === "JKFlipFlop") {
-        if (start_uuid === "output") {
-          const input = flipflopjs.flipFlops[fromEndpoint.elementId];
-          let pos = "";
-          if (Object.keys(fromEndpoint.overlays)[0].includes("qout")) {
-            pos = "Q";
-          } else if (
-            Object.keys(fromEndpoint.overlays)[0].includes("qbarout")
-          ) {
-            pos = "Q'";
-          }
-          input.setConnected(true, pos);
-          if (Object.keys(toEndpoint.overlays)[0].includes("rin")) {
-            flipflopjs.flipFlops[toEndpoint.elementId].setR([input, pos]);
-          } else if (Object.keys(toEndpoint.overlays)[0].includes("sin")) {
-            flipflopjs.flipFlops[toEndpoint.elementId].setS([input, pos]);
-          } else if (Object.keys(toEndpoint.overlays)[0].includes("clk")) {
-            flipflopjs.flipFlops[toEndpoint.elementId].setClk([input, pos]);
-          }
-        } else if (end_uuid === "output") {
-          const input = flipflopjs.flipFlops[toEndpoint.elementId];
-          let pos = "";
-          if (Object.keys(toEndpoint.overlays)[0].includes("qout")) {
-            pos = "Q";
-          } else if (Object.keys(toEndpoint.overlays)[0].includes("qbarout")) {
-            pos = "Q'";
-          }
-          input.setConnected(true, pos);
-          if (Object.keys(fromEndpoint.overlays)[0].includes("rin")) {
-            flipflopjs.flipFlops[fromEndpoint.elementId].setR([input, pos]);
-          } else if (Object.keys(fromEndpoint.overlays)[0].includes("sin")) {
-            flipflopjs.flipFlops[fromEndpoint.elementId].setS([input, pos]);
-          } else if (Object.keys(fromEndpoint.overlays)[0].includes("clk")) {
-            flipflopjs.flipFlops[fromEndpoint.elementId].setClk([input, pos]);
-          }
-        }
-      } else if (start_type === "JKFlipFlop" && end_type === "Input") {
-        if (end_uuid === "output") {
-          const input = gatejs.gates[toEndpoint.elementId];
-          input.setConnected(true);
-          let pos = "";
-          if (Object.keys(fromEndpoint.overlays)[0].includes("rin")) {
-            flipflopjs.flipFlops[fromEndpoint.elementId].setR([input, pos]);
-          } else if (Object.keys(fromEndpoint.overlays)[0].includes("sin")) {
-            flipflopjs.flipFlops[fromEndpoint.elementId].setS([input, pos]);
-          } else if (Object.keys(fromEndpoint.overlays)[0].includes("clk")) {
-            flipflopjs.flipFlops[fromEndpoint.elementId].setClk([input, pos]);
-          }
-        }
-      } else if (start_type === "Input" && end_type === "JKFlipFlop") {
-        if (start_uuid === "output") {
-          const input = gatejs.gates[fromEndpoint.elementId];
-          input.setConnected(true);
-          let pos = "";
-          if (Object.keys(toEndpoint.overlays)[0].includes("rin")) {
-            flipflopjs.flipFlops[toEndpoint.elementId].setR([input, pos]);
-          } else if (Object.keys(toEndpoint.overlays)[0].includes("sin")) {
-            flipflopjs.flipFlops[toEndpoint.elementId].setS([input, pos]);
-          } else if (Object.keys(toEndpoint.overlays)[0].includes("clk")) {
-            flipflopjs.flipFlops[toEndpoint.elementId].setClk([input, pos]);
-          }
-        }
-      } else if (start_type === "JKFlipFlop" && end_type === "Output") {
-        if (start_uuid === "output") {
-          const input = flipflopjs.flipFlops[fromEndpoint.elementId];
-          const output = gatejs.gates[toEndpoint.elementId];
-          let pos = "";
-          if (Object.keys(fromEndpoint.overlays)[0].includes("qout")) {
-            pos = "Q";
-          } else if (
-            Object.keys(fromEndpoint.overlays)[0].includes("qbarout")
-          ) {
-            pos = "Q'";
-          }
-          input.setConnected(true, pos);
-          output.addInput(input, pos);
-        }
-      } else if (start_type === "Output" && end_type === "JKFlipFlop") {
-        if (start_uuid === "input") {
-          const input = flipflopjs.flipFlops[toEndpoint.elementId];
-          const output = gatejs.gates[fromEndpoint.elementId];
-          let pos = "";
-          if (Object.keys(toEndpoint.overlays)[0].includes("qout")) {
-            pos = "Q";
-          } else if (Object.keys(toEndpoint.overlays)[0].includes("qbarout")) {
-            pos = "Q'";
-          }
-          input.setConnected(true, pos);
-          output.addInput(input, pos);
-        }
-      } else if (start_type === "Input" && end_type === "Output") {
-        if (start_uuid === "output") {
-          const input = gatejs.gates[fromEndpoint.elementId];
-          const output = gatejs.gates[toEndpoint.elementId];
-          input.setConnected(true);
-          output.addInput(input, "");
-        }
-      } else if (start_type === "Output" && end_type === "Input") {
-        if (start_uuid === "input") {
-          const input = gatejs.gates[toEndpoint.elementId];
-          const output = gatejs.gates[fromEndpoint.elementId];
-          input.setConnected(true);
-          output.addInput(input, "");
-        }
-      } else if (
-        start_type === "JKFlipFlop" &&
-        toEndpoint.elementId in gatejs.gates
-      ) {
-        // connection is started from the outputs of r-s flipflop
-        if (start_uuid === "output") {
-          // connection will end at the input of the gate
-          const input = flipflopjs.flipFlops[fromEndpoint.elementId];
-          const output = gatejs.gates[toEndpoint.elementId];
-          let pos = "";
-          if (Object.keys(fromEndpoint.overlays)[0].includes("qout")) {
-            pos = "Q";
-          } else if (
-            Object.keys(fromEndpoint.overlays)[0].includes("qbarout")
-          ) {
-            pos = "Q'";
-          }
-          input.setConnected(true, pos);
-          output.addInput(input, pos);
-        }
-        // connection is started from the inputs of r-s flipflop
-        else if (start_uuid === "input") {
-          // connection will end at the output of the gate
-          const input = gatejs.gates[toEndpoint.elementId];
-          input.setConnected(true);
-          let pos = "";
-          if (Object.keys(fromEndpoint.overlays)[0].includes("rin")) {
-            flipflopjs.flipFlops[fromEndpoint.elementId].setR([input, pos]);
-          } else if (Object.keys(fromEndpoint.overlays)[0].includes("sin")) {
-            flipflopjs.flipFlops[fromEndpoint.elementId].setS([input, pos]);
-          } else if (Object.keys(fromEndpoint.overlays)[0].includes("clk")) {
-            flipflopjs.flipFlops[fromEndpoint.elementId].setClk([input, pos]);
-          }
-        }
-      } else if (
-        end_type === "JKFlipFlop" &&
-        fromEndpoint.elementId in gatejs.gates
-      ) {
-        // connection is started from the outputs of gate
-        if (start_uuid === "output") {
-          // connection will end at the input of r-s flipflop
-          const input = gatejs.gates[fromEndpoint.elementId];
-          input.setConnected(true);
-          let pos = "";
-          if (Object.keys(toEndpoint.overlays)[0].includes("rin")) {
-            flipflopjs.flipFlops[toEndpoint.elementId].setR([input, pos]);
-          } else if (Object.keys(toEndpoint.overlays)[0].includes("sin")) {
-            flipflopjs.flipFlops[toEndpoint.elementId].setS([input, pos]);
-          } else if (Object.keys(toEndpoint.overlays)[0].includes("clk")) {
-            flipflopjs.flipFlops[toEndpoint.elementId].setClk([input, pos]);
-          }
-        }
-        // connection is started from the inputs of gate
-        else if (start_uuid === "input") {
-          // connection will end at the output of the r-s flip flop
-
-          const input = flipflopjs.flipFlops[toEndpoint.elementId];
-          const output = gatejs.gates[fromEndpoint.elementId];
-          let pos = "";
-          if (Object.keys(toEndpoint.overlays)[0].includes("qout")) {
-            pos = "Q";
-          } else if (Object.keys(toEndpoint.overlays)[0].includes("qbarout")) {
-            pos = "Q'";
-          }
-          input.setConnected(true, pos);
-          output.addInput(input, pos);
-        }
-      } else if (
-        start_type === "Input" &&
-        toEndpoint.elementId in gatejs.gates
-      ) {
-        if (start_uuid === "output") {
-          const input = gatejs.gates[fromEndpoint.elementId];
-          const output = gatejs.gates[toEndpoint.elementId];
-          input.setConnected(true);
-          output.addInput(input, "");
-        }
-      } else if (
-        fromEndpoint.elementId in gatejs.gates &&
-        end_type === "Input"
-      ) {
-        if (start_uuid === "input") {
-          const input = gatejs.gates[toEndpoint.elementId];
-          const output = gatejs.gates[fromEndpoint.elementId];
-          input.setConnected(true);
-          output.addInput(input, "");
-        }
-      } else if (
-        start_type === "Output" &&
-        toEndpoint.elementId in gatejs.gates
-      ) {
-        if (start_uuid === "input") {
-          const input = gatejs.gates[toEndpoint.elementId];
-          const output = gatejs.gates[fromEndpoint.elementId];
-          input.setConnected(true);
-          output.addInput(input, "");
-        }
-      } else if (
-        fromEndpoint.elementId in gatejs.gates &&
-        end_type === "Output"
-      ) {
-        if (start_uuid === "output") {
-          const input = gatejs.gates[fromEndpoint.elementId];
-          const output = gatejs.gates[toEndpoint.elementId];
-          input.setConnected(true);
-          output.addInput(input, "");
-        }
-      }
-      // need to check
-      else if (
-        fromEndpoint.elementId in gatejs.gates &&
-        toEndpoint.elementId in gatejs.gates
-      ) {
-        if (start_uuid === "output") {
-          const input = gatejs.gates[fromEndpoint.elementId];
-          const output = gatejs.gates[toEndpoint.elementId];
-          input.setConnected(true);
-          output.addInput(input, "");
-        } else if (end_uuid === "output") {
-          const input = gatejs.gates[toEndpoint.elementId];
-          const output = gatejs.gates[fromEndpoint.elementId];
-          input.setConnected(true);
-          output.addInput(input, "");
-        }
-      }
     }
+    jsPlumbInstance.connect({
+      uuids: [fromEndpoint.uuid, toEndpoint.uuid],
+      paintStyle: { stroke: wireColours[num_wires], strokeWidth: 4 },
+    });
+    num_wires++;
+    num_wires = num_wires % wireColours.length;
+    linkEndpoints(fromEndpoint, toEndpoint);
+    // the wire has been drawn above, so the drop itself is cancelled
+    return false;
   });
 };
 
@@ -1123,6 +685,8 @@ export function refreshWorkingArea() {
 // Submit circuit function
 function submitCircuit() {
   console.log("🎯 SUBMIT: Starting circuit submission");
+  // a result from an earlier Submit or Simulate must not stay on the screen
+  gatejs.clearResult();
   const task = window.currentTab;
   console.log("📋 SUBMIT: Current task:", task);
   console.log("🔧 SUBMIT: Available gates:", Object.keys(gatejs.gates));
@@ -1265,16 +829,17 @@ function submitCircuit() {
 
     if (allConnected) {
       console.log("🔬 SUBMIT: Running PIPO validation");
+      // P1 and Q1 are the right-most bits: Input-3 and Output-4
       testPIPO(
-        "Input-0",
-        "Input-1",
-        "Input-2",
         "Input-3",
+        "Input-2",
+        "Input-1",
+        "Input-0",
         "Clock-0",
-        "Output-1",
-        "Output-2",
+        "Output-4",
         "Output-3",
-        "Output-4"
+        "Output-2",
+        "Output-1"
       );
     }
   } else {
@@ -1289,11 +854,15 @@ function submitCircuit() {
 window.submitCircuit = submitCircuit;
 
 refresh.addEventListener("click", function () {
+  gatejs.stopSimulation();
+  gatejs.clearResult();
   jsPlumbInstance.reset();
   window.numComponents = 0;
 
   gatejs.clearGates();
   flipflopjs.clearFlipFlops();
+  // the wire handler is set up again, as it is when the tab changes
+  connectDFlipFlopGate();
   if (window.currentTab == "task1") initSISO();
   else initPIPO();
 });

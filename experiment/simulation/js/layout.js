@@ -8,6 +8,7 @@ import {
   jsPlumbInstance,
 } from "./main.js";
 import { deleteFF } from "./flipflop.js";
+import { stopSimulation } from "./gate.js";
 ("use strict");
 // Wires
 export const wireColours = [
@@ -137,6 +138,7 @@ function changeTabs(e) {
   document.getElementById(task).classList.add("is-active");
   console.log(`➕ Added active class to ${task}`);
 
+  stopSimulation();
   updateInstructions();
   connectDFlipFlopGate();
   refreshWorkingArea();
@@ -197,31 +199,18 @@ function updateToolbar() {
 
   if (window.currentTab === "task1") {
     console.log("🔧 Setting SISO components");
-    // SISO components - D flip-flops, clock, and basic gates
-    elem = `<div class="component-button dflipflop" onclick="addDFlipFlop(event)">D Flip-Flop</div>
-            <div class="component-button clock" id="addclock"></div>
-            <div class="component-button and" onclick="addGate(event)">AND</div>
-            <div class="component-button or" onclick="addGate(event)">OR</div>
-            <div class="component-button not" onclick="addGate(event)">NOT</div>`;
+    // SISO components - the register is built from D flip-flops only; the clock is already on the board
+    elem = `<div class="component-button dflipflop" onclick="addDFlipFlop(event)">D Flip-Flop</div>`;
   } else if (window.currentTab === "task2") {
     console.log("🔧 Setting PIPO components");
-    // PIPO components - D flip-flops, clock, and all gates for more complex logic
-    elem = `<div class="component-button dflipflop" onclick="addDFlipFlop(event)">D Flip-Flop</div>
-            <div class="component-button clock" id="addclock"></div>
-            <div class="component-button and" onclick="addGate(event)">AND</div>
-            <div class="component-button or" onclick="addGate(event)">OR</div>
-            <div class="component-button not" onclick="addGate(event)">NOT</div>
-            <div class="component-button nand" onclick="addGate(event)">NAND</div>
-            <div class="component-button nor" onclick="addGate(event)">NOR</div>
-            <div class="component-button xor" onclick="addGate(event)">XOR</div>
-            <div class="component-button xnor" onclick="addGate(event)">XNOR</div>`;
+    // PIPO components - the register is built from D flip-flops only; the clock is already on the board
+    elem = `<div class="component-button dflipflop" onclick="addDFlipFlop(event)">D Flip-Flop</div>`;
   } else {
     console.log(
       `🔧 Unknown tab: ${window.currentTab}, using default components`
     );
     // Default components
-    elem = `<div class="component-button dflipflop" onclick="addDFlipFlop(event)">D Flip-Flop</div>
-            <div class="component-button clock" id="addclock"></div>`;
+    elem = `<div class="component-button dflipflop" onclick="addDFlipFlop(event)">D Flip-Flop</div>`;
   }
 
   console.log(`🔧 Toolbar HTML length: ${elem.length}`);
@@ -289,46 +278,19 @@ window.simulationStatus = 1;
 const simButton = document.getElementById("simulate-button");
 const submitButton = document.getElementById("submit-button");
 function toggleSimulation() {
-  console.log("🎮 TOGGLE: Simulation button clicked");
-  console.log("📊 TOGGLE: Current simulation status:", window.simulationStatus);
-
   if (window.simulationStatus === 0) {
-    console.log("🛑 TOGGLE: Stopping simulation");
-    window.simulationStatus = 1;
-    simButton.innerHTML = "Simulate";
-    submitButton.disabled = false;
+    stopSimulation();
   } else {
-    console.log("▶️ TOGGLE: Starting simulation");
     window.simulationStatus = 0;
     simButton.innerHTML = "Stop";
     submitButton.disabled = true;
 
-    // For register simulation, we don't need complex animation
-    // The simulation is mainly for visual feedback
-    console.log("🔍 TOGGLE: Checking if window.simulate exists");
-    console.log("🔍 TOGGLE: window.simulate type:", typeof window.simulate);
-    console.log("🔍 TOGGLE: window.simulate exists:", !!window.simulate);
-
-    if (window.simulate && typeof window.simulate === "function") {
-      console.log("✅ TOGGLE: Calling window.simulate()");
-      const result = window.simulate();
-      console.log("📊 TOGGLE: Simulate function returned:", result);
-    } else {
-      console.log(
-        "❌ TOGGLE: window.simulate is not available or not a function"
-      );
+    // the clock keeps running until Stop (or Reset, or a change of tab) is pressed
+    if (!window.simulate()) {
+      stopSimulation();
     }
-
-    // Reset simulation status after a brief period
-    setTimeout(() => {
-      console.log("⏰ TOGGLE: Resetting simulation status after timeout");
-      window.simulationStatus = 1;
-      simButton.innerHTML = "Simulate";
-      submitButton.disabled = false;
-    }, 1000);
   }
 }
-
 window.toggleSimulation = toggleSimulation;
 
 // Making webpage responsive

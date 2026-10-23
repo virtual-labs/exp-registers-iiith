@@ -1,8 +1,8 @@
 ### Basic Storage Register
 
-<img src="images/basic_register.png" alt="Basic Storage Register Circuit Diagram">
+<img src="images/pipo_register.svg" alt="4-bit basic storage register: four D flip-flops with a common clock">
 
-_Figure 1: Basic Storage Register circuit diagram showing D flip-flops with common clock for synchronized data storage. Reference: Fundamental register implementation_
+_Figure 1: 4-bit basic storage register: four D flip-flops with a common clock. The data inputs P1 to P4 are copied to the outputs Q1 to Q4 at the clock edge. This is the circuit of the PIPO task in the Practice section._
 
 A basic storage register is a group of flip-flops used to store binary data. Each flip-flop can store one bit of information, and multiple flip-flops are combined to create registers of desired bit-width. The most common type uses D flip-flops with a common clock signal to ensure synchronized data storage and retrieval.
 
@@ -149,9 +149,9 @@ Shift registers are sequential circuits that can move data in a specific directi
 
 **4. Parallel-In-Parallel-Out (PIPO)**
 
-- Data can be loaded in parallel
-- Data shifted internally
-- Parallel output available at any time
+- Data is loaded in parallel
+- It is available at the parallel outputs after one clock pulse and is held until the next one
+- This is the basic storage register of Figure 1
 
 #### Logic Operation (Right Shift Register)
 
@@ -238,6 +238,8 @@ The register operates in three modes based on control signals:
 - **Right Shift (DIR = 0)**: Data shifts from left to right (MSB to LSB)
 - **Left Shift (DIR = 1)**: Data shifts from right to left (LSB to MSB)
 - **Parallel Load**: Data can be loaded in parallel when enabled
+
+Figure 3 shows the shifting part only: the direction input Right/left' decides which neighbour feeds each flip-flop. The parallel load mode of the equations below needs a LOAD input and a third data source in front of each flip-flop.
 
 #### Control Logic
 
@@ -408,3 +410,10 @@ Registers are essential in processor data paths:
 - **Efficient design to minimize** power usage in large register arrays
 - **Speed optimization** through careful flip-flop selection
 - **Area optimization** using shared control logic where possible
+
+### Notes on the Simulation
+
+- The D flip-flop of the simulation is **positive-edge triggered**: it copies D to Q at the moment the clock rises from 0 to 1, and keeps Q unchanged for the rest of the clock period. In a shift register all the flip-flops copy their inputs at the same edge, so each bit moves by one stage only per clock pulse.
+- Every run starts with Q = 1 in all the flip-flops (the registers contain 1111).
+- In the SISO task the bits are named Q1 to Q4 in the order in which the data reaches them: Q1 is the flip-flop that receives the serial input D (the leftmost flip-flop Q3 of the 4-bit example above) and Q4 is the last one (Q0 of the example), whose output is the serial output.
+- The **Simulate** button starts the clock Clk, which then runs until **Stop** (or Reset, or a change of tab) is pressed. The **Submit** button applies its own sequence of clock pulses and shows the expected and the observed values of the outputs in the Observations table.

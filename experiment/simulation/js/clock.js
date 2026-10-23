@@ -90,9 +90,14 @@ export class Clock {
         let currentState = false;
         let timerOff = null;
         let timerOn = null;
+        // a newer simulation (or a stop) ends this loop
+        const generation = window.simulationGeneration;
+        // the clock starts low, so that its first rise is a clock edge
+        this.isOn = false;
+        this.updateOutput();
 
         const run = () => {
-            if(window.simulationStatus === 1) {
+            if(window.simulationStatus === 1 || window.simulationGeneration !== generation) {
                 return;
             }
             if (!currentState) {
@@ -155,8 +160,15 @@ export function addClock(frequency, dutyCycle, workingArea, x, y, name, id) {
 
 const clockAdd = document.getElementById("clockAdd");
 clockAdd.addEventListener('click', function () {
-    const frequency = document.getElementById("frequency-input").value;
-    const dutyCycle = document.getElementById("dutycycle-input").value;
+    // an empty or invalid value would give a clock that never stops or runs at full speed, so defaults are used
+    let frequency = parseFloat(document.getElementById("frequency-input").value);
+    let dutyCycle = parseFloat(document.getElementById("dutycycle-input").value);
+    if (!(frequency >= 0.1 && frequency <= 5)) {
+        frequency = 0.5;
+    }
+    if (!(dutyCycle >= 1 && dutyCycle <= 99)) {
+        dutyCycle = 50;
+    }
     addClock(frequency,dutyCycle,"working-area",0,0,null,null)
     toggleModal();
 });

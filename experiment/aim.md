@@ -6,8 +6,8 @@ Through this interactive experiment, you will:
 
 - **Understand the fundamentals** of register design and memory storage in digital circuits
 - **Design and analyze** basic register circuits for data storage and manipulation
-- **Construct shift registers** for data movement and serial-to-parallel conversion
-- **Build counter circuits** using registers for counting and timing applications
+- **Construct a shift register** (SISO) and a **parallel register** (PIPO) from D flip-flops, and study the serial-in parallel-out and parallel-in serial-out variants in the theory
+- **See how registers lead to counter circuits** (ring and Johnson counters); counters are built in a later experiment
 - **Explore real-world applications** of registers in processors, memory systems, and digital controllers
 
 ### Why are registers important?
