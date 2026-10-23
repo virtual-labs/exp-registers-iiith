@@ -1,8 +1,6 @@
 import { registerGate } from "./main.js";
 import { setPosition } from "./layout.js";
 import {
-  testSISO,
-  testPIPO,
   computeAnd,
   computeNand,
   computeNor,
@@ -16,6 +14,7 @@ import {
   simulateFFDD,
   checkConnectionsDD,
   testSimulateDD,
+  presetFlipFlops,
 } from "./flipflop.js";
 
 ("use strict");
@@ -81,7 +80,7 @@ export class Gate {
 
     switch (this.type) {
       case "Input":
-        component = `<div class="high" id= ${this.id} ><a ondblclick="setInput(event)">1</a><p> ${this.name}  </p></div>`;
+        component = `<div class="high" id= ${this.id} ><a onclick="setInput(event)" title="Click to toggle between 0 and 1">1</a><p> ${this.name}  </p></div>`;
         this.output = true;
         this.isInput = true;
         break;
@@ -224,7 +223,24 @@ export function getResult(gate) {
   return;
 }
 
+// Position of the last mouse/touch press, used to tell a click apart from the end of a drag
+let pressPosition = { x: 0, y: 0 };
+document.addEventListener(
+  "pointerdown",
+  function (event) {
+    pressPosition = { x: event.clientX, y: event.clientY };
+  },
+  true
+);
+
+// Set the Input values of the input bits on click
 function setInput(event) {
+  // ignore the click that ends a drag of the input bit
+  if (
+    Math.hypot(event.clientX - pressPosition.x, event.clientY - pressPosition.y) > 5
+  ) {
+    return;
+  }
   let parentElement = event.target.parentElement;
   let element = event.target;
   let type = parentElement.className.split(" ")[0];
@@ -329,118 +345,47 @@ export function checkConnections() {
   return true;
 }
 
-export function simulate() {
-  console.log("🚀 SIMULATE: Starting simulation");
-  console.log("📊 Current tab:", window.currentTab);
-  console.log("🔧 Available gates:", Object.keys(gates));
+// Stops the clock of a running simulation and brings the Simulate and Submit buttons back to their normal state
+export function stopSimulation() {
+  window.simulationStatus = 1;
+  const simulateButton = document.getElementById("simulate-button");
+  if (simulateButton) {
+    simulateButton.innerHTML = "Simulate";
+  }
+  const submitButton = document.getElementById("submit-button");
+  if (submitButton) {
+    submitButton.disabled = false;
+  }
+}
 
+// Starts the clock and shows how the register works on the circuit board. The Submit button does the grading.
+export function simulate() {
   clearResult();
   window.simulationStatus = 0;
 
-  console.log("🔍 SIMULATE: Checking connections...");
   if (!checkConnections()) {
-    console.log("❌ SIMULATE: Basic connections failed");
     return false;
   }
-  console.log("✅ SIMULATE: Basic connections passed");
 
   if (window.currentTab === "task1" || window.currentTab === "task2") {
-    console.log("🔍 SIMULATE: Checking D flip-flop connections...");
     if (!checkConnectionsDD()) {
-      console.log("❌ SIMULATE: D flip-flop connections failed");
       return false;
     }
-    console.log("✅ SIMULATE: D flip-flop connections passed");
   }
 
-  let circuitHasClock = false;
-  console.log("⏰ SIMULATE: Looking for clock components...");
+  // every new simulation gets its own number, so that the loops of an earlier one stop by themselves
+  window.simulationGeneration = (window.simulationGeneration || 0) + 1;
+  presetFlipFlops();
 
   for (let gateId in gates) {
     const gate = gates[gateId];
     if (gate.type === "Clock") {
-      console.log("⏰ SIMULATE: Found clock component:", gateId);
-      circuitHasClock = true;
       gate.simulate();
     }
   }
 
-  if (!circuitHasClock) {
-    console.log("⏰ SIMULATE: No clock found, simulating with clock");
-    simulateWithClock();
-  } else {
-    console.log("⏰ SIMULATE: Clock components simulated");
-  }
-
-  // After connection validation, run the appropriate test to generate observations
-  console.log("📊 SIMULATE: Running tests to generate observations...");
-
-  if (window.currentTab === "task1") {
-    console.log("📊 SIMULATE: Running SISO test");
-    // Use predefined component IDs for SISO test
-    const inputD = "Input-0"; // D input
-    const outputQ = "Output-4"; // Final output Q4 (or use Output-1 for Q1)
-
-    // For clock, check if Clock-0 exists in gates, otherwise use a dummy for testing
-    let inputClk = "Clock-0";
-    if (!gates[inputClk]) {
-      console.log("⚠️ SIMULATE: Clock-0 not found in gates, using fallback");
-      // Create a temporary clock component for testing
-      inputClk = "Input-0"; // Use D input as clock for basic testing
-    }
-
-    // Verify components exist
-    if (gates[inputD] && gates[outputQ]) {
-      console.log(
-        `📊 SIMULATE: Found components - D: ${inputD}, Q: ${outputQ}`
-      );
-      console.log(`📊 SIMULATE: Using clock: ${inputClk}`);
-      testSISO(inputD, inputClk, outputQ);
-    } else {
-      console.log("⚠️ SIMULATE: Missing required components for SISO test");
-      console.log(`📊 Found - D: ${!!gates[inputD]}, Q: ${!!gates[outputQ]}`);
-    }
-  } else if (window.currentTab === "task2") {
-    console.log("📊 SIMULATE: Running PIPO test");
-    // Use predefined component IDs for PIPO test
-    const p1 = "Input-3"; // P1 input
-    const p2 = "Input-2"; // P2 input
-    const p3 = "Input-1"; // P3 input
-    const p4 = "Input-0"; // P4 input
-    const inputClk = "Clock-0"; // Clock input
-    const q1 = "Output-4"; // Q1 output
-    const q2 = "Output-3"; // Q2 output
-    const q3 = "Output-2"; // Q3 output
-    const q4 = "Output-1"; // Q4 output
-
-    // Verify all components exist
-    if (
-      gates[p1] &&
-      gates[p2] &&
-      gates[p3] &&
-      gates[p4] &&
-      gates[inputClk] &&
-      gates[q1] &&
-      gates[q2] &&
-      gates[q3] &&
-      gates[q4]
-    ) {
-      console.log(`📊 SIMULATE: Found all PIPO components`);
-      testPIPO(p1, p2, p3, p4, inputClk, q1, q2, q3, q4);
-    } else {
-      console.log("⚠️ SIMULATE: Missing required components for PIPO test");
-      console.log(
-        `📊 Inputs exist - P1: ${!!gates[p1]}, P2: ${!!gates[
-          p2
-        ]}, P3: ${!!gates[p3]}, P4: ${!!gates[p4]}, CLK: ${!!gates[inputClk]}`
-      );
-      console.log(
-        `📊 Outputs exist - Q1: ${!!gates[q1]}, Q2: ${!!gates[
-          q2
-        ]}, Q3: ${!!gates[q3]}, Q4: ${!!gates[q4]}`
-      );
-    }
-  }
+  // show the starting state (Q = 1) on the output bits right away; the clock edges follow
+  simulateWithClock();
 
   return true;
 }
@@ -701,10 +646,10 @@ export function deleteElement(gateid) {
   for (let key in flipFlops) {
     if (flipFlops[key].constructor.name === "DFlipFlop") {
       if (flipFlops[key].d[0] === gate) {
-        flipFlops[key].d = null;
+        flipFlops[key].d = [];
       }
       if (flipFlops[key].clk[0] === gate) {
-        flipFlops[key].clk = null;
+        flipFlops[key].clk = [];
       }
       if (flipFlops[key].qOutputs.includes(gate)) {
         flipFlops[key].removeqOutput(gate);

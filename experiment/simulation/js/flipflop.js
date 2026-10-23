@@ -17,6 +17,8 @@ class DFlipFlop {
     this.clk = [];
     this.q = true;
     this.qbar = false;
+    // value of the clock when the flip-flop was last evaluated, to detect the rising edge
+    this.prevClk = false;
     this.inputPoints = [];
     this.outputPoints = [];
     this.qOutputs = [];
@@ -107,21 +109,22 @@ class DFlipFlop {
     }
   }
 
-  generateOutput() {
-    const d = getOutputD(this.d[0], this.d[1]);
+  // The flip-flop is edge triggered: D is copied to Q at the moment the clock rises from 0 to 1, and Q stays
+  // unchanged for the rest of the clock period. Returns the new value of Q, or null if the clock did not rise.
+  sampleEdge() {
     const clk = getOutputD(this.clk[0], this.clk[1]);
-
-    if (!clk) {
-      return;
-    } else {
-      if (!d) {
-        this.q = false;
-        this.qbar = true;
-      } else if (d) {
-        this.q = true;
-        this.qbar = false;
-      }
+    const d = getOutputD(this.d[0], this.d[1]);
+    if (clk == null || d == null) {
+      return null;
     }
+    const rising = clk && !this.prevClk;
+    this.prevClk = !!clk;
+    return rising ? !!d : null;
+  }
+
+  setNext(q) {
+    this.q = q;
+    this.qbar = !q;
   }
 }
 
@@ -148,20 +151,29 @@ function getOutputD(gate, pos) {
   }
 }
 
-// done checking
-function getResultDD(ff) {
-  // check if flipflop type is Gate object
-  if (ff.constructor.name === "Gate") {
-    return;
+// Updates all the flip-flops together: every flip-flop first reads its D input, and only then do the outputs
+// change, so that in a shift register each stage takes the value its predecessor had before the clock edge.
+function updateFlipFlops(list) {
+  const updates = [];
+  for (let ffID in list) {
+    const ff = list[ffID];
+    if (ff.constructor.name !== "DFlipFlop" || ff.d.length === 0 || ff.clk.length === 0) {
+      continue;
+    }
+    const next = ff.sampleEdge();
+    if (next !== null) {
+      updates.push([ff, next]);
+    }
   }
+  updates.forEach(([ff, next]) => ff.setNext(next));
+}
 
-  if (
-    getOutputD(ff.d[0], ff.d[1]) != null &&
-    getOutputD(ff.clk[0], ff.clk[1]) != null
-  ) {
-    ff.generateOutput();
+// Puts every flip-flop in the state Q = 1, Q' = 0 and lets the next clock rise count as an edge
+export function presetFlipFlops() {
+  for (let ffID in flipFlops) {
+    flipFlops[ffID].setNext(true);
+    flipFlops[ffID].prevClk = false;
   }
-  return;
 }
 
 // done checking
@@ -208,17 +220,11 @@ export function checkConnectionsDD() {
 }
 
 export function simulateFFDD() {
-  for (let ffID in flipFlops) {
-    const gate = flipFlops[ffID];
-    getResultDD(gate);
-  }
+  updateFlipFlops(flipFlops);
 }
 
 export function testSimulateDD(flipFlops) {
-  for (let ffID in flipFlops) {
-    const gate = flipFlops[ffID];
-    getResultDD(gate);
-  }
+  updateFlipFlops(flipFlops);
 }
 
 export function deleteFF(id) {
@@ -248,10 +254,10 @@ export function deleteFF(id) {
       }
     } else if (ff.constructor.name === "DFlipFlop") {
       if (flipFlops[key].d[0] === ff) {
-        flipFlops[key].d = null;
+        flipFlops[key].d = [];
       }
       if (flipFlops[key].clk[0] === ff) {
-        flipFlops[key].clk = null;
+        flipFlops[key].clk = [];
       }
       if (flipFlops[key].qOutputs.includes(ff)) {
         flipFlops[key].removeqOutput(ff);
